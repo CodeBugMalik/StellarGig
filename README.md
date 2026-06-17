@@ -6,6 +6,22 @@
 
 ---
 
+## 🌐 Testnet Deployment Details
+
+The smart contracts have been compiled, built, deployed, and cross-initialized on the **Stellar Testnet** using the custom identity `pranjal`.
+
+### Contract Addresses
+- **Escrow Vault Contract ID**: `CAG3XHMM5GWWN2EHO7W6F6EJU2PYWYMQGCFXH5CR3QUC7AUCD7YWF32W`
+- **Job Manager Contract ID**: `CADTWDW7YAZ7UE7DBZWJOIUEZPV2WFKINLFAQCPUW36JUFQ3XD6PXC3L`
+
+### Deployment & Interaction Transactions
+- **Escrow Contract Deploy Tx**: [`20565791ec83f6a38526dcc3883e55f10750a96347cd8246a8d97323cf4a16eeb`](https://stellar.expert/explorer/testnet/tx/20565791ec83f6a38526dcc3883e55f10750a96347cd8246a8d97323cf4a16eeb)
+- **Job Contract Deploy Tx**: [`d8a7752c025e243e4e7eec4cd729818ebf95f5a464f6fbc6acba63b05828afaad`](https://stellar.expert/explorer/testnet/tx/d8a7752c025e243e4e7eec4cd729818ebf95f5a464f6fbc6acba63b05828afad)
+- **Initialize Escrow Tx (Cross-contract Link)**: [`2d0da37eff89fe68b70a830b7648f6f25067f7ad22407fb42beab056c6abc9c6`](https://stellar.expert/explorer/testnet/tx/2d0da37eff89fe68b70a830b7648f6f25067f7ad22407fb42beab056c6abc9c6)
+- **Initialize Job Tx (Cross-contract Link)**: [`8511eab2128db1d5f33d2b86f87fb1752a593bf94e6dbe6a4a310893c604088c`](https://stellar.expert/explorer/testnet/tx/8511eab2128db1d5f33d2b86f87fb1752a593bf94e6dbe6a4a310893c604088c)
+
+---
+
 ## 🌟 Overview
 
 StellarGig is a production-ready decentralized application (dApp) that solves the trust problem in freelance payments. Clients post jobs with milestones, fund an on-chain escrow, freelancers complete work, and payments are automatically released through inter-contract communication between the **Job Contract** and **Escrow Vault Contract**.
