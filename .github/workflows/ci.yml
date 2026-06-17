@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  frontend-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+
+  contract-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Build Escrow Contract
+        working-directory: contracts/escrow-contract
+        run: cargo build --target wasm32-unknown-unknown --release
+      - name: Build Job Contract
+        working-directory: contracts/job-contract
+        run: cargo build --target wasm32-unknown-unknown --release
+      - name: Test Escrow Contract
+        working-directory: contracts/escrow-contract
+        run: cargo test
+      - name: Test Job Contract
+        working-directory: contracts/job-contract
+        run: cargo test

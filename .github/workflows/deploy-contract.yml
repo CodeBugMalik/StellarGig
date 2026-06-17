@@ -1,0 +1,41 @@
+name: Deploy Contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: 'Network to deploy to'
+        required: true
+        default: 'testnet'
+        type: choice
+        options:
+          - testnet
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Install Stellar CLI
+        run: cargo install stellar-cli --locked || true
+      - name: Build Escrow Contract
+        working-directory: contracts/escrow-contract
+        run: cargo build --target wasm32-unknown-unknown --release
+      - name: Build Job Contract
+        working-directory: contracts/job-contract
+        run: cargo build --target wasm32-unknown-unknown --release
+      - name: Deploy Escrow Contract
+        run: |
+          stellar contract deploy \
+            --wasm contracts/escrow-contract/target/wasm32-unknown-unknown/release/escrow_contract.wasm \
+            --source ${{ secrets.STELLAR_SECRET_KEY }} \
+            --network testnet
+      - name: Deploy Job Contract
+        run: |
+          stellar contract deploy \
+            --wasm contracts/job-contract/target/wasm32-unknown-unknown/release/job_contract.wasm \
+            --source ${{ secrets.STELLAR_SECRET_KEY }} \
+            --network testnet
