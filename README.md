@@ -10,6 +10,10 @@
 
 The smart contracts have been compiled, built, deployed, and cross-initialized on the **Stellar Testnet** using the custom identity `pranjal`.
 
+### Live Demo & Code Repositories
+- **Live dApp Link**: [https://stellar-gig.netlify.app/](https://stellar-gig.netlify.app/)
+- **GitHub Repository**: [https://github.com/CodeBugMalik/StellarGig](https://github.com/CodeBugMalik/StellarGig)
+
 ### Contract Addresses
 - **Escrow Vault Contract ID**: `CAG3XHMM5GWWN2EHO7W6F6EJU2PYWYMQGCFXH5CR3QUC7AUCD7YWF32W`
 - **Job Manager Contract ID**: `CADTWDW7YAZ7UE7DBZWJOIUEZPV2WFKINLFAQCPUW36JUFQ3XD6PXC3L`
