@@ -20,9 +20,9 @@ export default function MilestoneTracker({ milestones }: MilestoneTrackerProps) 
       </div>
 
       {/* Progress bar */}
-      <div className="mb-6 h-2 overflow-hidden rounded-full bg-surface-700">
+      <div className="mb-6 h-1.5 overflow-hidden rounded-full bg-zinc-800">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-brand-500 to-purple-500 transition-all duration-700 ease-out"
+          className="h-full rounded-full bg-white transition-all duration-700 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -44,12 +44,12 @@ export default function MilestoneTracker({ milestones }: MilestoneTrackerProps) 
                 ? 'text-amber-400'
                 : milestone.status === 'disputed'
                   ? 'text-red-400'
-                  : 'text-surface-600';
+                  : 'text-zinc-600';
 
           return (
             <div
               key={index}
-              className="flex items-start gap-3 rounded-lg border border-surface-700 bg-surface-900 p-3"
+              className="flex items-start gap-3 rounded-lg border border-zinc-800/80 bg-zinc-950/40 p-3"
             >
               <div className={`mt-0.5 ${iconColor}`}>
                 <Icon className="h-4 w-4" />
@@ -61,10 +61,10 @@ export default function MilestoneTracker({ milestones }: MilestoneTrackerProps) 
                   </p>
                   <Badge status={milestone.status} />
                 </div>
-                <p className="mt-1 text-xs text-slate-400 line-clamp-2">
+                <p className="mt-1 text-xs text-zinc-400 line-clamp-2">
                   {milestone.description}
                 </p>
-                <p className="mt-1 text-xs font-medium text-brand-300">
+                <p className="mt-1 text-xs font-medium text-zinc-300">
                   {Number(milestone.amount).toFixed(2)} XLM
                 </p>
               </div>

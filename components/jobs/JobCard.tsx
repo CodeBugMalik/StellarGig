@@ -15,17 +15,17 @@ export default function JobCard({ job }: JobCardProps) {
     <Link href={`/jobs/${job.id}`}>
       <div className="card-interactive group" id={`job-card-${job.id}`}>
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-white line-clamp-1 group-hover:text-brand-300 transition-colors">
+          <h3 className="text-base font-semibold text-white line-clamp-1 group-hover:text-zinc-300 transition-colors">
             {job.title}
           </h3>
           <Badge status={job.status} />
         </div>
 
-        <p className="mt-2 text-sm text-slate-400 line-clamp-2">
+        <p className="mt-2 text-sm text-zinc-400 line-clamp-2">
           {job.description}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
           <span className="flex items-center gap-1.5">
             <FiUser className="h-3.5 w-3.5" />
             {stellar.formatAddress(job.client, 4, 4)}
@@ -39,9 +39,9 @@ export default function JobCard({ job }: JobCardProps) {
         <div className="mt-4 flex items-center justify-between">
           <p className="text-lg font-bold text-white">
             {Number(job.totalAmount).toFixed(2)}{' '}
-            <span className="text-sm font-normal text-brand-300">XLM</span>
+            <span className="text-sm font-normal text-zinc-400">XLM</span>
           </p>
-          <span className="flex items-center gap-1 text-xs text-brand-400 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="flex items-center gap-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
             View details <FiArrowRight className="h-3 w-3" />
           </span>
         </div>

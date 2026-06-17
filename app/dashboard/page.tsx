@@ -54,29 +54,29 @@ export default function DashboardPage() {
       icon: FiDollarSign,
       label: 'Total Earned',
       value: `${stats.totalEarned.toFixed(2)} XLM`,
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-500/10',
+      color: 'text-white',
+      bg: 'bg-zinc-800/80 border border-zinc-700/50',
     },
     {
       icon: FiBriefcase,
       label: 'Active Jobs',
       value: String(stats.activeCount),
-      color: 'text-brand-400',
-      bg: 'bg-brand-500/10',
+      color: 'text-zinc-300',
+      bg: 'bg-zinc-800/80 border border-zinc-700/50',
     },
     {
       icon: FiCheckCircle,
       label: 'Completed',
       value: String(stats.completedCount),
-      color: 'text-cyan-400',
-      bg: 'bg-cyan-500/10',
+      color: 'text-zinc-200',
+      bg: 'bg-zinc-800/80 border border-zinc-700/50',
     },
     {
       icon: FiTrendingUp,
       label: 'Total Jobs',
       value: String(stats.totalJobs),
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10',
+      color: 'text-zinc-400',
+      bg: 'bg-zinc-800/80 border border-zinc-700/50',
     },
   ];
 
@@ -85,7 +85,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-zinc-400">
             {stellar.formatAddress(publicKey, 6, 6)}
           </p>
         </div>
@@ -99,11 +99,11 @@ export default function DashboardPage() {
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {statCards.map((stat) => (
           <div key={stat.label} className="card">
-            <div className={`mb-3 inline-flex rounded-lg p-2.5 ${stat.bg}`}>
+            <div className={`mb-3 inline-flex rounded-lg p-2.5 items-center justify-center ${stat.bg}`}>
               <stat.icon className={`h-5 w-5 ${stat.color}`} />
             </div>
             <p className="text-2xl font-bold text-white">{stat.value}</p>
-            <p className="mt-1 text-xs text-slate-400">{stat.label}</p>
+            <p className="mt-1 text-xs text-zinc-400">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -134,7 +134,7 @@ export default function DashboardPage() {
             <div className="space-y-4">
               {stats.clientJobs.length > 0 && (
                 <div>
-                  <h3 className="mb-3 text-sm font-medium text-slate-400">As Client</h3>
+                  <h3 className="mb-3 text-sm font-medium text-zinc-400">As Client</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {stats.clientJobs.map((job) => (
                       <JobCard key={job.id} job={job} />
@@ -144,7 +144,7 @@ export default function DashboardPage() {
               )}
               {stats.freelancerJobs.length > 0 && (
                 <div>
-                  <h3 className="mb-3 text-sm font-medium text-slate-400">As Freelancer</h3>
+                  <h3 className="mb-3 text-sm font-medium text-zinc-400">As Freelancer</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {stats.freelancerJobs.map((job) => (
                       <JobCard key={job.id} job={job} />

@@ -44,13 +44,13 @@ export default function HomePage() {
     <div className="animate-fade-in">
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 via-transparent to-transparent" />
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-brand-500/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 h-[500px] w-[500px] rounded-full bg-white/5 blur-[120px]" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-sm text-brand-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400 animate-pulse" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-1.5 text-sm text-zinc-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
               Built on Stellar Soroban
             </div>
 
@@ -60,7 +60,7 @@ export default function HomePage() {
               <span className="gradient-text">on Stellar</span>
             </h1>
 
-            <p className="mt-6 text-lg leading-8 text-slate-400 sm:text-xl">
+            <p className="mt-6 text-lg leading-8 text-zinc-400 sm:text-xl">
               Create jobs, fund on-chain escrow, complete milestones, and release payments — 
               all powered by Soroban smart contracts with zero intermediaries.
             </p>
@@ -83,7 +83,7 @@ export default function HomePage() {
         <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">
           How It Works
         </h2>
-        <p className="mt-3 text-center text-slate-400">
+        <p className="mt-3 text-center text-zinc-400">
           Three simple steps to trustless freelance payments.
         </p>
 
@@ -93,35 +93,35 @@ export default function HomePage() {
               key={step.title}
               className="card text-center group"
             >
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-400 group-hover:bg-brand-500/20 transition-colors">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-200 group-hover:bg-zinc-800 transition-colors">
                 <step.icon className="h-7 w-7" />
               </div>
-              <div className="mb-2 text-xs font-bold text-brand-400">
+              <div className="mb-2 text-xs font-bold text-zinc-400">
                 STEP {index + 1}
               </div>
               <h3 className="text-lg font-semibold text-white">{step.title}</h3>
-              <p className="mt-2 text-sm text-slate-400">{step.description}</p>
+              <p className="mt-2 text-sm text-zinc-400">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Features */}
-      <section className="border-t border-surface-700 bg-surface-800/50">
+      <section className="border-t border-zinc-850 bg-zinc-900/10">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-white sm:text-3xl">
             Built for Production
           </h2>
-          <p className="mt-3 text-center text-slate-400">
+          <p className="mt-3 text-center text-zinc-400">
             Advanced Soroban features that make this a real-world dApp.
           </p>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {features.map((feature) => (
               <div key={feature.title} className="card">
-                <feature.icon className="mb-3 h-6 w-6 text-brand-400" />
+                <feature.icon className="mb-3 h-6 w-6 text-zinc-300" />
                 <h3 className="text-base font-semibold text-white">{feature.title}</h3>
-                <p className="mt-2 text-sm text-slate-400">{feature.description}</p>
+                <p className="mt-2 text-sm text-zinc-400">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -130,11 +130,11 @@ export default function HomePage() {
 
       {/* CTA */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-brand-500/20 bg-gradient-to-br from-brand-500/5 to-purple-500/5 p-8 text-center sm:p-12">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center sm:p-12">
           <h2 className="text-2xl font-bold text-white sm:text-3xl">
             Ready to get started?
           </h2>
-          <p className="mt-3 text-slate-400">
+          <p className="mt-3 text-zinc-400">
             Connect your Stellar wallet and start posting or accepting jobs today.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">

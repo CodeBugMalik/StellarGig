@@ -38,7 +38,7 @@ export default function JobsPage() {
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">Browse Jobs</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-zinc-400">
             {jobs.length} job{jobs.length !== 1 ? 's' : ''} on the platform
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function JobsPage() {
       {/* Filters */}
       <div className="mt-6 flex flex-col gap-4 sm:flex-row">
         <label className="relative flex-1">
-          <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -66,8 +66,8 @@ export default function JobsPage() {
               onClick={() => setStatusFilter(s)}
               className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-colors ${
                 statusFilter === s
-                  ? 'bg-brand-500 text-white'
-                  : 'bg-surface-800 text-slate-400 hover:text-white border border-surface-700'
+                  ? 'bg-white text-black'
+                  : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
               }`}
             >
               {s === 'all' ? 'All' : s.replace('_', ' ')}

@@ -10,10 +10,10 @@ export default function EscrowStatus({ escrow }: EscrowStatusProps) {
     return (
       <div className="card">
         <div className="flex items-center gap-2 text-sm font-semibold text-white">
-          <FiLock className="h-4 w-4 text-brand-400" />
+          <FiLock className="h-4 w-4 text-zinc-400" />
           Escrow
         </div>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-zinc-500">
           No escrow deposit found for this job. The client must fund the escrow before a freelancer can accept.
         </p>
       </div>
@@ -30,22 +30,22 @@ export default function EscrowStatus({ escrow }: EscrowStatusProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold text-white">
           {escrow.isActive ? (
-            <FiLock className="h-4 w-4 text-amber-400" />
+            <FiLock className="h-4 w-4 text-zinc-400" />
           ) : (
-            <FiUnlock className="h-4 w-4 text-emerald-400" />
+            <FiUnlock className="h-4 w-4 text-white" />
           )}
           Escrow {escrow.isActive ? 'Active' : 'Settled'}
         </div>
         <span
           className={`status-badge ${
             escrow.isActive
-              ? 'bg-amber-500/10 text-amber-300'
-              : 'bg-emerald-500/10 text-emerald-300'
+              ? 'bg-zinc-800 text-zinc-200 border border-zinc-700/50'
+              : 'bg-white/10 text-white border border-white/20'
           }`}
         >
           <span
             className={`h-1.5 w-1.5 rounded-full ${
-              escrow.isActive ? 'bg-amber-400' : 'bg-emerald-400'
+              escrow.isActive ? 'bg-zinc-400' : 'bg-white'
             }`}
           />
           {escrow.isActive ? 'Locked' : 'Released'}
@@ -53,28 +53,28 @@ export default function EscrowStatus({ escrow }: EscrowStatusProps) {
       </div>
 
       {/* Progress bar */}
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-surface-700">
+      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-zinc-800">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-700"
+          className="h-full rounded-full bg-white transition-all duration-700"
           style={{ width: `${releasedPercent}%` }}
         />
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3 text-center">
         <div>
-          <p className="text-xs text-slate-400">Total</p>
+          <p className="text-xs text-zinc-400">Total</p>
           <p className="mt-1 text-sm font-semibold text-white">{total.toFixed(2)}</p>
-          <p className="text-xs text-slate-500">XLM</p>
+          <p className="text-xs text-zinc-500">XLM</p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Released</p>
-          <p className="mt-1 text-sm font-semibold text-emerald-300">{released.toFixed(2)}</p>
-          <p className="text-xs text-slate-500">XLM</p>
+          <p className="text-xs text-zinc-400">Released</p>
+          <p className="mt-1 text-sm font-semibold text-zinc-200">{released.toFixed(2)}</p>
+          <p className="text-xs text-zinc-500">XLM</p>
         </div>
         <div>
-          <p className="text-xs text-slate-400">Remaining</p>
-          <p className="mt-1 text-sm font-semibold text-amber-300">{remaining.toFixed(2)}</p>
-          <p className="text-xs text-slate-500">XLM</p>
+          <p className="text-xs text-zinc-400">Remaining</p>
+          <p className="mt-1 text-sm font-semibold text-zinc-400">{remaining.toFixed(2)}</p>
+          <p className="text-xs text-zinc-500">XLM</p>
         </div>
       </div>
     </div>

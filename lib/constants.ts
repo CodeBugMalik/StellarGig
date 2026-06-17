@@ -14,13 +14,13 @@ export const NETWORK_PASSPHRASE = 'Test SDF Network ; September 2015';
 export const EXPLORER_BASE_URL = 'https://stellar.expert/explorer/testnet';
 
 export const STATUS_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  open: { bg: 'bg-brand-500/10', text: 'text-brand-300', dot: 'bg-brand-400' },
-  funded: { bg: 'bg-cyan-500/10', text: 'text-cyan-300', dot: 'bg-cyan-400' },
-  in_progress: { bg: 'bg-amber-500/10', text: 'text-amber-300', dot: 'bg-amber-400' },
-  under_review: { bg: 'bg-purple-500/10', text: 'text-purple-300', dot: 'bg-purple-400' },
-  completed: { bg: 'bg-emerald-500/10', text: 'text-emerald-300', dot: 'bg-emerald-400' },
-  disputed: { bg: 'bg-red-500/10', text: 'text-red-300', dot: 'bg-red-400' },
-  cancelled: { bg: 'bg-slate-500/10', text: 'text-slate-400', dot: 'bg-slate-500' },
+  open: { bg: 'bg-zinc-800/40 border border-zinc-800', text: 'text-zinc-300', dot: 'bg-zinc-400' },
+  funded: { bg: 'bg-zinc-800/60 border border-zinc-700/50', text: 'text-zinc-200', dot: 'bg-zinc-300' },
+  in_progress: { bg: 'bg-zinc-900 border border-zinc-800', text: 'text-zinc-300', dot: 'bg-white' },
+  under_review: { bg: 'bg-zinc-950 border border-zinc-800', text: 'text-zinc-300', dot: 'bg-zinc-400' },
+  completed: { bg: 'bg-white/10 border border-white/20', text: 'text-white', dot: 'bg-white' },
+  disputed: { bg: 'bg-red-500/10 border border-red-500/20', text: 'text-red-400', dot: 'bg-red-500' },
+  cancelled: { bg: 'bg-zinc-950 border border-zinc-900', text: 'text-zinc-500', dot: 'bg-zinc-700' },
 };
 
 export const STATUS_LABELS: Record<string, string> = {
