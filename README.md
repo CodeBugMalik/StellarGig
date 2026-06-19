@@ -275,6 +275,33 @@ stellar contract invoke --id JOB_ID --source deployer --network testnet -- initi
 
 ---
 
+## 📸 Submission Screenshots
+
+### 📱 Mobile Responsive UI
+Here is the mobile-responsive layout of StellarGig optimized for mobile viewports (tested at 375px+ width):
+
+<p align="center">
+  <img src="submission%20assets/mobuiss1.png" width="375" alt="Mobile UI Screenshot 1" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="submission%20assets/mobuiss2.png" width="375" alt="Mobile UI Screenshot 2" />
+</p>
+
+### 🔄 CI/CD Pipeline
+GitHub Actions pipeline executing linter checks, frontend unit tests, Next.js production builds, contract builds, and Cargo contract tests on push:
+
+<p align="center">
+  <img src="submission%20assets/cicd%20ss.png" alt="CI/CD Pipeline Run" />
+</p>
+
+### 🧪 Test Suite Results
+Local terminal outputs showing all Vitest frontend tests and Rust smart contract tests passing successfully:
+
+<p align="center">
+  <img src="submission%20assets/test%20ss.png" alt="Test Execution Output" />
+</p>
+
+---
+
 ## 📄 License
 
 This project is built for the RiseIn Stellar dApp Development Program — Level 3 Orange Belt.
