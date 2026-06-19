@@ -103,7 +103,7 @@ export class JobContractClient {
         }),
         new StellarSdk.xdr.ScMapEntry({
           key: StellarSdk.xdr.ScVal.scvSymbol('status'),
-          val: StellarSdk.xdr.ScVal.scvSymbol('Pending'),
+          val: StellarSdk.xdr.ScVal.scvVec([StellarSdk.xdr.ScVal.scvSymbol('Pending')]),
         }),
       ])
     );
