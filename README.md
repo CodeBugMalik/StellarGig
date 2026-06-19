@@ -12,7 +12,7 @@ The smart contracts have been compiled, built, deployed, and cross-initialized o
 
 ### Live Demo & Code Repositories
 - **Live dApp Link**: [https://stellar-gig.netlify.app/](https://stellar-gig.netlify.app/)
-- **Demo Video Walkthrough**: [Google Drive Link](https://drive.google.com/file/d/1TVddXfG497UZLqCkzC25VmloXoKOw1zR/view?usp=sharing)
+- **Demo Video **: [https://drive.google.com/file/d/1TVddXfG497UZLqCkzC25VmloXoKOw1zR/view?usp=sharing](https://drive.google.com/file/d/1TVddXfG497UZLqCkzC25VmloXoKOw1zR/view?usp=sharing)
 - **GitHub Repository**: [https://github.com/CodeBugMalik/StellarGig](https://github.com/CodeBugMalik/StellarGig)
 
 ### Contract Addresses
