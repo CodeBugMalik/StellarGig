@@ -88,12 +88,24 @@ export class JobContractClient {
     milestones: MilestoneInput[];
   }): Promise<{ hash: string }> {
     const milestoneVals = params.milestones.map((m) =>
-      StellarSdk.nativeToScVal({
-        description: m.description,
-        amount: BigInt(stellar.xlmToStroops(m.amount)),
-        status: { Pending: undefined },
-        deadline: BigInt(0),
-      })
+      StellarSdk.xdr.ScVal.scvMap([
+        new StellarSdk.xdr.ScMapEntry({
+          key: StellarSdk.xdr.ScVal.scvSymbol('amount'),
+          val: StellarSdk.nativeToScVal(BigInt(stellar.xlmToStroops(m.amount)), { type: 'i128' }),
+        }),
+        new StellarSdk.xdr.ScMapEntry({
+          key: StellarSdk.xdr.ScVal.scvSymbol('deadline'),
+          val: StellarSdk.nativeToScVal(0, { type: 'u64' }),
+        }),
+        new StellarSdk.xdr.ScMapEntry({
+          key: StellarSdk.xdr.ScVal.scvSymbol('description'),
+          val: StellarSdk.nativeToScVal(m.description, { type: 'string' }),
+        }),
+        new StellarSdk.xdr.ScMapEntry({
+          key: StellarSdk.xdr.ScVal.scvSymbol('status'),
+          val: StellarSdk.xdr.ScVal.scvSymbol('Pending'),
+        }),
+      ])
     );
 
     return stellar.buildAndSignTx({
