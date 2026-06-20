@@ -6,6 +6,20 @@
 
 ---
 
+### 🔴 The Problem
+Traditional freelancing platforms (such as Upwork or Fiverr) face significant issues:
+- **Exorbitant Platform Fees**: Centralized intermediaries take up to 20% of the freelancer's earnings.
+- **Trust Deficit & Payment Risks**: Freelancers often face the risk of non-payment after completing deliverables, while clients risk losing deposits to unresponsive or low-quality providers.
+- **Delayed Settlements**: legacy banking rails and platform processing periods cause payouts to take days or weeks.
+
+### 🟢 The Solution
+StellarGig provides a trustless, decentralized alternative:
+- **On-Chain Milestone Escrow**: Client funds are secured in a smart contract prior to starting, ensuring payment protection for freelancers.
+- **Inter-Contract Security (ICC)**: The Job contract calls the Escrow contract via secure cross-contract calls to release payments automatically upon milestone approval, eliminating human mediation.
+- **Instant Settlement & Low Cost**: Powered by Stellar Soroban, transaction fees cost fractions of a cent, and payments are settled instantly to the freelancer's wallet.
+
+---
+
 ## 🌐 Testnet Deployment Details
 
 The smart contracts have been compiled, built, deployed, and cross-initialized on the **Stellar Testnet** using the custom identity `pranjal`.
