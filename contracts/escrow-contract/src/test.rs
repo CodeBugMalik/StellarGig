@@ -3,14 +3,26 @@
 use super::*;
 use soroban_sdk::{testutils::Address as _, Address, Env};
 
+/* ─── Mock Job Contract for Testing ─── */
+
+#[contract]
+pub struct MockJobContract;
+
+#[contractimpl]
+impl MockJobContract {
+    pub fn mark_funded(_env: Env, _job_id: u64) {
+        // Stub implementation that does nothing to satisfy the ICC invocation
+    }
+}
+
 fn setup_env() -> (Env, Address) {
     let env = Env::default();
     env.mock_all_auths();
     let contract_id = env.register(EscrowContract, ());
     let client = EscrowContractClient::new(&env, &contract_id);
 
-    let job_contract = Address::generate(&env);
-    client.initialize(&job_contract);
+    let job_contract_id = env.register(MockJobContract, ());
+    client.initialize(&job_contract_id);
 
     (env, contract_id)
 }

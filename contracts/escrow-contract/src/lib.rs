@@ -1,6 +1,22 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Env};
+use soroban_sdk::{contract, contractimpl, contracttype, contracterror, vec, Address, Env, IntoVal, Symbol, Vec};
+
+/* ─── Custom Errors ─── */
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum Error {
+    AlreadyInitialized = 1,
+    NotInitialized = 2,
+    Unauthorized = 3,
+    EscrowNotActive = 4,
+    ReleaseExceedsAmount = 5,
+    EscrowAlreadySettled = 6,
+    AlreadyFunded = 7,
+    InvalidAmount = 8,
+}
 
 /* ─── Storage keys ─── */
 
@@ -9,6 +25,7 @@ pub enum DataKey {
     Escrow(u64),
     JobContract,
     TotalEscrowed,
+    Initialized,
 }
 
 /* ─── Types ─── */
@@ -32,21 +49,38 @@ pub struct EscrowContract;
 impl EscrowContract {
     /// Initialize with the authorized job contract address.
     pub fn initialize(env: Env, job_contract: Address) {
+        if env.storage().instance().has(&DataKey::Initialized) {
+            env.panic_with_error(Error::AlreadyInitialized);
+        }
+
         env.storage()
             .instance()
             .set(&DataKey::JobContract, &job_contract);
         env.storage()
             .instance()
             .set(&DataKey::TotalEscrowed, &0i128);
+        env.storage()
+            .instance()
+            .set(&DataKey::Initialized, &true);
+
+        env.storage().instance().extend_ttl(4096, 50000);
         env.events().publish(("escrow", "initialized"), true);
     }
 
     /// Client funds escrow for a job.
-    /// In a production contract this would use SAC token transfer.
-    /// For the demo/testnet we track amounts without actual XLM movement
-    /// to avoid SAC complexity and focus on the inter-contract pattern.
     pub fn fund_job(env: Env, client: Address, job_id: u64, amount: i128) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         client.require_auth();
+
+        if amount <= 0 {
+            env.panic_with_error(Error::InvalidAmount);
+        }
+
+        if env.storage().instance().has(&DataKey::Escrow(job_id)) {
+            env.panic_with_error(Error::AlreadyFunded);
+        }
 
         let deposit = EscrowDeposit {
             job_id,
@@ -69,6 +103,24 @@ impl EscrowContract {
             .instance()
             .set(&DataKey::TotalEscrowed, &(total + amount));
 
+        // *** INTER-CONTRACT CALL: Mark Job as Funded ***
+        let job_contract: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::JobContract)
+            .unwrap();
+
+        let args: Vec<soroban_sdk::Val> = vec![
+            &env,
+            job_id.into_val(&env),
+        ];
+
+        env.invoke_contract::<()>(
+            &job_contract,
+            &Symbol::new(&env, "mark_funded"),
+            args,
+        );
+
         env.events()
             .publish(("escrow", "funded"), (job_id, amount));
     }
@@ -82,6 +134,16 @@ impl EscrowContract {
         freelancer: Address,
         amount: i128,
     ) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
+        let job_contract: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::JobContract)
+            .unwrap();
+        job_contract.require_auth();
+
         let mut deposit: EscrowDeposit = env
             .storage()
             .instance()
@@ -89,10 +151,10 @@ impl EscrowContract {
             .unwrap();
 
         if !deposit.is_active {
-            panic!("Escrow is not active");
+            env.panic_with_error(Error::EscrowNotActive);
         }
         if deposit.released_amount + amount > deposit.total_amount {
-            panic!("Release exceeds escrowed amount");
+            env.panic_with_error(Error::ReleaseExceedsAmount);
         }
 
         deposit.released_amount += amount;
@@ -111,6 +173,16 @@ impl EscrowContract {
 
     /// Refund remaining escrow to client (for cancelled jobs).
     pub fn refund(env: Env, job_id: u64, client: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
+        let job_contract: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::JobContract)
+            .unwrap();
+        job_contract.require_auth();
+
         let mut deposit: EscrowDeposit = env
             .storage()
             .instance()
@@ -118,7 +190,7 @@ impl EscrowContract {
             .unwrap();
 
         if !deposit.is_active {
-            panic!("Escrow already settled");
+            env.panic_with_error(Error::EscrowAlreadySettled);
         }
 
         let refund_amount = deposit.total_amount - deposit.released_amount;
@@ -150,6 +222,7 @@ impl EscrowContract {
     /* ─── Read functions ─── */
 
     pub fn get_escrow(env: Env, job_id: u64) -> EscrowDeposit {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::Escrow(job_id))
@@ -157,10 +230,19 @@ impl EscrowContract {
     }
 
     pub fn get_total_escrowed(env: Env) -> i128 {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::TotalEscrowed)
             .unwrap_or(0)
+    }
+
+    /* ─── Helpers ─── */
+
+    fn check_initialized(env: &Env) {
+        if !env.storage().instance().has(&DataKey::Initialized) {
+            env.panic_with_error(Error::NotInitialized);
+        }
     }
 }
 
