@@ -20,16 +20,12 @@ export function useJobs(publicKey?: string) {
       setLoading(true);
       setError('');
       const count = await jobClient.getJobCount(publicKey);
-      const fetched: Job[] = [];
-
+      const promises = [];
       for (let i = 1; i <= count; i++) {
-        try {
-          const job = await jobClient.getJob(i, publicKey);
-          fetched.push(job);
-        } catch {
-          /* skip jobs that fail to load */
-        }
+        promises.push(jobClient.getJob(i, publicKey).catch(() => null));
       }
+      const results = await Promise.all(promises);
+      const fetched = results.filter((job): job is Job => job !== null);
 
       setJobs(fetched.reverse());
     } catch (err: unknown) {
