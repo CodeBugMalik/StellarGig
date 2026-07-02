@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWallet } from '@/hooks/useWallet';
 import { jobClient } from '@/lib/contracts/job-client';
@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import toast from 'react-hot-toast';
 import type { MilestoneInput, TransactionStatus } from '@/lib/types';
 import { FiDollarSign, FiPlus, FiSend, FiTrash2 } from 'react-icons/fi';
+import { trackEvent } from '@/lib/analytics';
 
 export default function CreateJobPage() {
   const router = useRouter();
@@ -19,6 +20,15 @@ export default function CreateJobPage() {
     { description: '', amount: '' },
   ]);
   const [txStatus, setTxStatus] = useState<TransactionStatus>('idle');
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+      }
+    };
+  }, []);
 
   const totalAmount = milestones.reduce((sum, m) => sum + (Number(m.amount) || 0), 0);
 
@@ -75,19 +85,26 @@ export default function CreateJobPage() {
 
       toast.success('Job created successfully!');
       setTxStatus('success');
+      trackEvent('job_created', {
+        title: title.trim(),
+        milestones_count: milestones.length,
+        total_amount: totalAmount,
+        tx_hash: result.hash,
+      });
 
       /* Wait for confirmation then redirect */
       const poll = setInterval(async () => {
         const status = await stellar.pollTransaction(result.hash);
         if (status.status === 'SUCCESS') {
-          clearInterval(poll);
+          if (pollRef.current) clearInterval(pollRef.current);
           router.push('/jobs');
         } else if (status.status === 'FAILED') {
-          clearInterval(poll);
+          if (pollRef.current) clearInterval(pollRef.current);
           setTxStatus('failed');
           toast.error('Transaction failed on-chain.');
         }
       }, 3000);
+      pollRef.current = poll;
     } catch (err: unknown) {
       setTxStatus('failed');
       const message = err instanceof Error ? err.message : 'Failed to create job';
