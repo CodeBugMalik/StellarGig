@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { stellar } from '@/lib/stellar';
+import { trackEvent } from '@/lib/analytics';
 
 export function useWallet() {
   const [publicKey, setPublicKey] = useState('');
@@ -12,7 +13,11 @@ export function useWallet() {
   /* Restore from session on mount */
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? sessionStorage.getItem('sg_wallet') : null;
-    if (stored) setPublicKey(stored);
+    if (stored && /^G[A-Z2-7]{55}$/.test(stored)) {
+      setPublicKey(stored);
+    } else if (stored) {
+      sessionStorage.removeItem('sg_wallet');
+    }
   }, []);
 
   const connect = useCallback(async (id?: string) => {
@@ -23,6 +28,7 @@ export function useWallet() {
       const key = await stellar.connectWallet(id);
       setPublicKey(key);
       sessionStorage.setItem('sg_wallet', key);
+      trackEvent('wallet_connected', { wallet_id: id || 'freighter', public_key: key });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Connection failed';
       setError(message);
