@@ -1,6 +1,29 @@
 #![no_std]
 
-use soroban_sdk::{contract, contractimpl, contracttype, vec, Address, Env, IntoVal, String, Symbol, Vec};
+use soroban_sdk::{contract, contractimpl, contracttype, contracterror, vec, Address, Env, IntoVal, String, Symbol, Vec};
+
+/* ─── Custom Errors ─── */
+
+#[contracterror]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(u32)]
+pub enum Error {
+    AlreadyInitialized = 1,
+    NotInitialized = 2,
+    JobNotOpen = 3,
+    JobNotFunded = 4,
+    JobNotInProgress = 5,
+    NotFreelancer = 6,
+    MilestoneNotPending = 7,
+    NotClient = 8,
+    MilestoneNotSubmitted = 9,
+    CannotCancel = 10,
+    InvalidMilestone = 11,
+    AlreadyFunded = 12,
+    InvalidInput = 13,
+    SelfDealing = 14,
+    Unauthorized = 15,
+}
 
 /* ─── Storage keys ─── */
 
@@ -11,6 +34,7 @@ pub enum DataKey {
     ClientJobs(Address),
     FreelancerJobs(Address),
     EscrowContract,
+    Initialized,
 }
 
 /* ─── Types ─── */
@@ -69,10 +93,17 @@ pub struct JobContract;
 impl JobContract {
     /// Initialize the contract with the escrow contract address.
     pub fn initialize(env: Env, escrow_contract: Address) {
+        if env.storage().instance().has(&DataKey::Initialized) {
+            env.panic_with_error(Error::AlreadyInitialized);
+        }
         env.storage().instance().set(&DataKey::JobCount, &0u64);
         env.storage()
             .instance()
             .set(&DataKey::EscrowContract, &escrow_contract);
+        env.storage()
+            .instance()
+            .set(&DataKey::Initialized, &true);
+        env.storage().instance().extend_ttl(4096, 50000);
         env.events().publish(("contract", "initialized"), true);
     }
 
@@ -84,7 +115,28 @@ impl JobContract {
         description: String,
         milestones: Vec<Milestone>,
     ) -> u64 {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         client.require_auth();
+
+        if title.len() == 0 || description.len() == 0 {
+            env.panic_with_error(Error::InvalidInput);
+        }
+
+        if milestones.len() == 0 || milestones.len() > 10 {
+            env.panic_with_error(Error::InvalidMilestone);
+        }
+
+        // Calculate total amount & validate milestone amounts
+        let mut total: i128 = 0;
+        for i in 0..milestones.len() {
+            let m = milestones.get(i).unwrap();
+            if m.amount <= 0 {
+                env.panic_with_error(Error::InvalidInput);
+            }
+            total += m.amount;
+        }
 
         let count: u64 = env
             .storage()
@@ -92,13 +144,6 @@ impl JobContract {
             .get(&DataKey::JobCount)
             .unwrap_or(0);
         let job_id = count + 1;
-
-        // Calculate total amount
-        let mut total: i128 = 0;
-        for i in 0..milestones.len() {
-            let m = milestones.get(i).unwrap();
-            total += m.amount;
-        }
 
         let escrow_contract: Address = env
             .storage()
@@ -139,6 +184,9 @@ impl JobContract {
 
     /// Freelancer accepts a funded job.
     pub fn accept_job(env: Env, job_id: u64, freelancer: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         freelancer.require_auth();
 
         let mut job: Job = env
@@ -148,7 +196,11 @@ impl JobContract {
             .unwrap();
 
         if job.status != JobStatus::Funded {
-            panic!("Job must be funded before accepting");
+            env.panic_with_error(Error::JobNotFunded);
+        }
+
+        if job.client == freelancer {
+            env.panic_with_error(Error::SelfDealing);
         }
 
         job.freelancer = freelancer.clone();
@@ -172,6 +224,9 @@ impl JobContract {
 
     /// Freelancer submits a milestone.
     pub fn submit_milestone(env: Env, job_id: u64, milestone_index: u32, freelancer: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         freelancer.require_auth();
 
         let mut job: Job = env
@@ -181,15 +236,15 @@ impl JobContract {
             .unwrap();
 
         if job.freelancer != freelancer {
-            panic!("Only assigned freelancer can submit");
+            env.panic_with_error(Error::NotFreelancer);
         }
         if job.status != JobStatus::InProgress {
-            panic!("Job must be in progress");
+            env.panic_with_error(Error::JobNotInProgress);
         }
 
         let mut m = job.milestones.get(milestone_index).unwrap();
         if m.status != MilestoneStatus::Pending {
-            panic!("Milestone already submitted or completed");
+            env.panic_with_error(Error::MilestoneNotPending);
         }
 
         m.status = MilestoneStatus::Submitted;
@@ -203,6 +258,9 @@ impl JobContract {
 
     /// Client approves a milestone → triggers inter-contract escrow release.
     pub fn approve_milestone(env: Env, job_id: u64, milestone_index: u32, client: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         client.require_auth();
 
         let mut job: Job = env
@@ -212,12 +270,12 @@ impl JobContract {
             .unwrap();
 
         if job.client != client {
-            panic!("Only the client can approve");
+            env.panic_with_error(Error::NotClient);
         }
 
         let mut m = job.milestones.get(milestone_index).unwrap();
         if m.status != MilestoneStatus::Submitted {
-            panic!("Milestone must be submitted first");
+            env.panic_with_error(Error::MilestoneNotSubmitted);
         }
 
         let amount = m.amount;
@@ -231,7 +289,6 @@ impl JobContract {
             .get(&DataKey::EscrowContract)
             .unwrap();
 
-        // *** INTER-CONTRACT CALL via env.invoke_contract ***
         let args: Vec<soroban_sdk::Val> = vec![
             &env,
             job_id.into_val(&env),
@@ -268,6 +325,9 @@ impl JobContract {
 
     /// Client disputes a milestone.
     pub fn dispute_milestone(env: Env, job_id: u64, milestone_index: u32, client: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         client.require_auth();
 
         let mut job: Job = env
@@ -277,12 +337,12 @@ impl JobContract {
             .unwrap();
 
         if job.client != client {
-            panic!("Only the client can dispute");
+            env.panic_with_error(Error::NotClient);
         }
 
         let mut m = job.milestones.get(milestone_index).unwrap();
         if m.status != MilestoneStatus::Submitted {
-            panic!("Can only dispute submitted milestones");
+            env.panic_with_error(Error::MilestoneNotSubmitted);
         }
 
         m.status = MilestoneStatus::Disputed;
@@ -294,8 +354,11 @@ impl JobContract {
             .publish(("milestone", "disputed"), (job_id, milestone_index));
     }
 
-    /// Cancel a job (only if open/funded and no freelancer assigned).
-    pub fn cancel_job(env: Env, job_id: u64, client: Address) {
+    /// Client resolves a dispute, setting the milestone status and job status.
+    pub fn resolve_dispute(env: Env, job_id: u64, milestone_index: u32, client: Address, approve: bool) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
         client.require_auth();
 
         let mut job: Job = env
@@ -305,10 +368,98 @@ impl JobContract {
             .unwrap();
 
         if job.client != client {
-            panic!("Only the client can cancel");
+            env.panic_with_error(Error::NotClient);
+        }
+
+        let mut m = job.milestones.get(milestone_index).unwrap();
+        if m.status != MilestoneStatus::Disputed {
+            env.panic_with_error(Error::InvalidInput);
+        }
+
+        if approve {
+            m.status = MilestoneStatus::Approved;
+            job.milestones.set(milestone_index, m.clone());
+
+            // Release escrow via ICC
+            let escrow_address: Address = env
+                .storage()
+                .instance()
+                .get(&DataKey::EscrowContract)
+                .unwrap();
+
+            let args: Vec<soroban_sdk::Val> = vec![
+                &env,
+                job_id.into_val(&env),
+                milestone_index.into_val(&env),
+                job.freelancer.into_val(&env),
+                m.amount.into_val(&env),
+            ];
+            env.invoke_contract::<()>(
+                &escrow_address,
+                &Symbol::new(&env, "release_milestone"),
+                args,
+            );
+        } else {
+            m.status = MilestoneStatus::Pending;
+            job.milestones.set(milestone_index, m);
+        }
+
+        // Recalculate job status
+        let mut all_done = true;
+        let mut in_dispute = false;
+        let mut under_review = false;
+
+        for i in 0..job.milestones.len() {
+            let ms = job.milestones.get(i).unwrap();
+            match ms.status {
+                MilestoneStatus::Approved => {}
+                MilestoneStatus::Disputed => {
+                    all_done = false;
+                    in_dispute = true;
+                }
+                MilestoneStatus::Submitted => {
+                    all_done = false;
+                    under_review = true;
+                }
+                MilestoneStatus::Pending => {
+                    all_done = false;
+                }
+            }
+        }
+
+        job.status = if all_done {
+            JobStatus::Completed
+        } else if in_dispute {
+            JobStatus::Disputed
+        } else if under_review {
+            JobStatus::UnderReview
+        } else {
+            JobStatus::InProgress
+        };
+
+        env.storage().instance().set(&DataKey::Job(job_id), &job);
+        env.events()
+            .publish(("milestone", "resolved"), (job_id, milestone_index, approve));
+    }
+
+    /// Cancel a job (only if open/funded and no freelancer assigned).
+    pub fn cancel_job(env: Env, job_id: u64, client: Address) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
+        client.require_auth();
+
+        let mut job: Job = env
+            .storage()
+            .instance()
+            .get(&DataKey::Job(job_id))
+            .unwrap();
+
+        if job.client != client {
+            env.panic_with_error(Error::NotClient);
         }
         if job.status != JobStatus::Open && job.status != JobStatus::Funded {
-            panic!("Can only cancel open or funded jobs");
+            env.panic_with_error(Error::CannotCancel);
         }
 
         if job.status == JobStatus::Funded {
@@ -318,7 +469,7 @@ impl JobContract {
                 .instance()
                 .get(&DataKey::EscrowContract)
                 .unwrap();
-            // Inter-contract call: refund escrow
+
             let args: Vec<soroban_sdk::Val> = vec![
                 &env,
                 job_id.into_val(&env),
@@ -338,6 +489,17 @@ impl JobContract {
 
     /// Mark a job as funded (called after escrow is funded).
     pub fn mark_funded(env: Env, job_id: u64) {
+        Self::check_initialized(&env);
+        env.storage().instance().extend_ttl(4096, 50000);
+
+        let escrow_address: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::EscrowContract)
+            .unwrap();
+        
+        escrow_address.require_auth();
+
         let mut job: Job = env
             .storage()
             .instance()
@@ -345,7 +507,7 @@ impl JobContract {
             .unwrap();
 
         if job.status != JobStatus::Open {
-            panic!("Job must be open to fund");
+            env.panic_with_error(Error::JobNotOpen);
         }
 
         job.status = JobStatus::Funded;
@@ -356,6 +518,7 @@ impl JobContract {
     /* ─── Read functions ─── */
 
     pub fn get_job(env: Env, job_id: u64) -> Job {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::Job(job_id))
@@ -363,6 +526,7 @@ impl JobContract {
     }
 
     pub fn get_job_count(env: Env) -> u64 {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::JobCount)
@@ -370,6 +534,7 @@ impl JobContract {
     }
 
     pub fn get_client_jobs(env: Env, client: Address) -> Vec<u64> {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::ClientJobs(client))
@@ -377,10 +542,19 @@ impl JobContract {
     }
 
     pub fn get_freelancer_jobs(env: Env, freelancer: Address) -> Vec<u64> {
+        env.storage().instance().extend_ttl(4096, 50000);
         env.storage()
             .instance()
             .get(&DataKey::FreelancerJobs(freelancer))
             .unwrap_or(vec![&env])
+    }
+
+    /* ─── Helpers ─── */
+
+    fn check_initialized(env: &Env) {
+        if !env.storage().instance().has(&DataKey::Initialized) {
+            env.panic_with_error(Error::NotInitialized);
+        }
     }
 }
 
