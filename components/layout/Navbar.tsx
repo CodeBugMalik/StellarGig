@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiMenu, FiX, FiZap } from 'react-icons/fi';
 import WalletButton from '@/components/wallet/WalletButton';
+import { initAnalytics } from '@/lib/analytics';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -14,6 +15,10 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
 
   return (
     <header className="sticky top-0 z-40 glass">
