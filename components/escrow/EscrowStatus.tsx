@@ -1,11 +1,27 @@
 import type { EscrowDeposit } from '@/lib/types';
 import { FiLock, FiUnlock } from 'react-icons/fi';
+import Skeleton from '../ui/Skeleton';
 
 interface EscrowStatusProps {
   escrow: EscrowDeposit | null;
+  loading?: boolean;
 }
 
-export default function EscrowStatus({ escrow }: EscrowStatusProps) {
+export default function EscrowStatus({ escrow, loading }: EscrowStatusProps) {
+  if (loading) {
+    return (
+      <div className="card space-y-3">
+        <Skeleton className="h-5 w-24" />
+        <Skeleton className="h-2 w-full" />
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          <Skeleton className="h-10" />
+          <Skeleton className="h-10" />
+          <Skeleton className="h-10" />
+        </div>
+      </div>
+    );
+  }
+
   if (!escrow) {
     return (
       <div className="card">

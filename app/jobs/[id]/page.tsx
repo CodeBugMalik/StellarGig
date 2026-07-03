@@ -16,6 +16,8 @@ import Skeleton from '@/components/ui/Skeleton';
 import MilestoneTracker from '@/components/jobs/MilestoneTracker';
 import EscrowStatus from '@/components/escrow/EscrowStatus';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
+import ConfirmModal from '@/components/ui/ConfirmModal';
+import { trackEvent } from '@/lib/analytics';
 import toast from 'react-hot-toast';
 import {
   FiCheckCircle,
@@ -31,12 +33,22 @@ export default function JobDetailPage() {
   const params = useParams();
   const jobId = Number(params.id);
   const { publicKey, isConnected } = useWallet();
-  const { escrow, refetch: refetchEscrow } = useEscrow(jobId, publicKey || undefined);
+  const { escrow, loading: escrowLoading, refetch: refetchEscrow } = useEscrow(jobId, publicKey || undefined);
   const { events, loading: eventsLoading } = useContractEvents(JOB_CONTRACT_ID, 10_000);
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [txStatus, setTxStatus] = useState<TransactionStatus>('idle');
   const [txHash, setTxHash] = useState('');
+
+  // Confirmation Modal State
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    actionName: string;
+    amount?: string;
+    action: () => Promise<{ hash: string }>;
+    successMsg: string;
+  } | null>(null);
 
   const fetchJob = useCallback(async () => {
     if (!publicKey) return;
@@ -81,6 +93,28 @@ export default function JobDetailPage() {
       const message = err instanceof Error ? err.message : 'Action failed';
       toast.error(message);
     }
+  };
+
+  const triggerActionWithConfirm = (config: {
+    title: string;
+    actionName: string;
+    amount?: string;
+    action: () => Promise<{ hash: string }>;
+    successMsg: string;
+  }) => {
+    setConfirmConfig(config);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmedAction = async () => {
+    if (!confirmConfig) return;
+    setConfirmOpen(false);
+    trackEvent('job_action_executed', {
+      action_title: confirmConfig.title,
+      action_name: confirmConfig.actionName,
+      amount: confirmConfig.amount,
+    });
+    await handleAction(confirmConfig.action, confirmConfig.successMsg);
   };
 
   const isClient = job && publicKey && job.client === publicKey;
@@ -205,10 +239,13 @@ export default function JobDetailPage() {
               <Button
                 loading={txStatus === 'pending'}
                 onClick={() =>
-                  handleAction(
-                    () => escrowClient.fundJob(publicKey, jobId, job.totalAmount),
-                    'Escrow funded successfully!'
-                  )
+                  triggerActionWithConfirm({
+                    title: 'Fund Escrow',
+                    actionName: `Locking funds for "${job.title}"`,
+                    amount: job.totalAmount,
+                    action: () => escrowClient.fundJob(publicKey, jobId, job.totalAmount),
+                    successMsg: 'Escrow funded successfully!',
+                  })
                 }
                 icon={<FiDollarSign className="h-4 w-4" />}
                 className="w-full"
@@ -221,10 +258,12 @@ export default function JobDetailPage() {
               <Button
                 loading={txStatus === 'pending'}
                 onClick={() =>
-                  handleAction(
-                    () => jobClient.acceptJob(publicKey, jobId),
-                    'Job accepted!'
-                  )
+                  triggerActionWithConfirm({
+                    title: 'Accept Job',
+                    actionName: `Accepting job "${job.title}" as Freelancer`,
+                    action: () => jobClient.acceptJob(publicKey, jobId),
+                    successMsg: 'Job accepted!',
+                  })
                 }
                 icon={<FiCheckCircle className="h-4 w-4" />}
                 className="w-full"
@@ -240,10 +279,13 @@ export default function JobDetailPage() {
                     key={i}
                     loading={txStatus === 'pending'}
                     onClick={() =>
-                      handleAction(
-                        () => jobClient.submitMilestone(publicKey, jobId, i),
-                        `Milestone ${i + 1} submitted!`
-                      )
+                      triggerActionWithConfirm({
+                        title: 'Submit Milestone',
+                        actionName: `Submitting Milestone ${i + 1}: "${m.description}"`,
+                        amount: m.amount,
+                        action: () => jobClient.submitMilestone(publicKey, jobId, i),
+                        successMsg: `Milestone ${i + 1} submitted!`,
+                      })
                     }
                     icon={<FiSend className="h-4 w-4" />}
                     className="w-full"
@@ -260,10 +302,13 @@ export default function JobDetailPage() {
                     <Button
                       loading={txStatus === 'pending'}
                       onClick={() =>
-                        handleAction(
-                          () => jobClient.approveMilestone(publicKey, jobId, i),
-                          `Milestone ${i + 1} approved! Payment released.`
-                        )
+                        triggerActionWithConfirm({
+                          title: 'Approve Milestone',
+                          actionName: `Approving Milestone ${i + 1} and releasing payment`,
+                          amount: m.amount,
+                          action: () => jobClient.approveMilestone(publicKey, jobId, i),
+                          successMsg: `Milestone ${i + 1} approved! Payment released.`,
+                        })
                       }
                       icon={<FiCheckCircle className="h-4 w-4" />}
                       className="flex-1"
@@ -274,10 +319,13 @@ export default function JobDetailPage() {
                       variant="danger"
                       loading={txStatus === 'pending'}
                       onClick={() =>
-                        handleAction(
-                          () => jobClient.disputeMilestone(publicKey, jobId, i),
-                          `Milestone ${i + 1} disputed.`
-                        )
+                        triggerActionWithConfirm({
+                          title: 'Dispute Milestone',
+                          actionName: `Disputing Milestone ${i + 1}: "${m.description}"`,
+                          amount: m.amount,
+                          action: () => jobClient.disputeMilestone(publicKey, jobId, i),
+                          successMsg: `Milestone ${i + 1} disputed.`,
+                        })
                       }
                       icon={<FiAlertTriangle className="h-4 w-4" />}
                       className="flex-1"
@@ -293,10 +341,13 @@ export default function JobDetailPage() {
                 variant="danger"
                 loading={txStatus === 'pending'}
                 onClick={() =>
-                  handleAction(
-                    () => jobClient.cancelJob(publicKey, jobId),
-                    'Job cancelled.'
-                  )
+                  triggerActionWithConfirm({
+                    title: 'Cancel Job',
+                    actionName: `Cancelling job and refunding escrow if funded`,
+                    amount: job.status === 'funded' ? job.totalAmount : undefined,
+                    action: () => jobClient.cancelJob(publicKey, jobId),
+                    successMsg: 'Job cancelled.',
+                  })
                 }
                 icon={<FiXCircle className="h-4 w-4" />}
                 className="w-full"
@@ -314,10 +365,20 @@ export default function JobDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <EscrowStatus escrow={escrow} />
+          <EscrowStatus escrow={escrow} loading={escrowLoading} />
           <ActivityFeed events={events} loading={eventsLoading} />
         </div>
       </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmedAction}
+        title={confirmConfig?.title || ''}
+        actionName={confirmConfig?.actionName || ''}
+        amount={confirmConfig?.amount}
+        loading={txStatus === 'pending'}
+      />
     </div>
   );
 }
