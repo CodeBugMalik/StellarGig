@@ -19,6 +19,8 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run build
+      - name: Run Lighthouse CI
+        run: npx @lhci/cli@0.13.x autorun || true
 
   contract-build-and-test:
     runs-on: ubuntu-latest
