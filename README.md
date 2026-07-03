@@ -32,14 +32,14 @@ The smart contracts have been compiled, built, deployed, and cross-initialized o
 - **GitHub Repository**: [https://github.com/CodeBugMalik/StellarGig](https://github.com/CodeBugMalik/StellarGig)
 
 ### Contract Addresses
-- **Escrow Vault Contract ID**: `CAG3XHMM5GWWN2EHO7W6F6EJU2PYWYMQGCFXH5CR3QUC7AUCD7YWF32W`
-- **Job Manager Contract ID**: `CADTWDW7YAZ7UE7DBZWJOIUEZPV2WFKINLFAQCPUW36JUFQ3XD6PXC3L`
+- **Escrow Vault Contract ID**: `CDQTRHKGXJDNUQMJ2MNQVSGB5SOEESSQGU65EX63G5Q5ZSS5ZTP5UCG7`
+- **Job Manager Contract ID**: `CB5ZWJ5F3ZBKQ2FOKYGEHW6RFX7F6ACKY52CKYVBESTFEHZUSSC4WTQX`
 
 ### Deployment & Interaction Transactions
-- **Escrow Contract Deploy Tx**: [`20565791ec83f6a38526dcc3883e55f10750a96347cd8246a8d97323cf4a16eeb`](https://stellar.expert/explorer/testnet/tx/20565791ec83f6a38526dcc3883e55f10750a96347cd8246a8d97323cf4a16eeb)
-- **Job Contract Deploy Tx**: [`d8a7752c025e243e4e7eec4cd729818ebf95f5a464f6fbc6acba63b05828afaad`](https://stellar.expert/explorer/testnet/tx/d8a7752c025e243e4e7eec4cd729818ebf95f5a464f6fbc6acba63b05828afad)
-- **Initialize Escrow Tx (Cross-contract Link)**: [`2d0da37eff89fe68b70a830b7648f6f25067f7ad22407fb42beab056c6abc9c6`](https://stellar.expert/explorer/testnet/tx/2d0da37eff89fe68b70a830b7648f6f25067f7ad22407fb42beab056c6abc9c6)
-- **Initialize Job Tx (Cross-contract Link)**: [`8511eab2128db1d5f33d2b86f87fb1752a593bf94e6dbe6a4a310893c604088c`](https://stellar.expert/explorer/testnet/tx/8511eab2128db1d5f33d2b86f87fb1752a593bf94e6dbe6a4a310893c604088c)
+- **Escrow Contract Deploy Tx**: [`1c24ec3f3447acded512a4a61b78588231fa3ed72f92c13fa658a9842f3207bf`](https://stellar.expert/explorer/testnet/tx/1c24ec3f3447acded512a4a61b78588231fa3ed72f92c13fa658a9842f3207bf)
+- **Job Contract Deploy Tx**: [`ebc4756e1e5a6bbadb5a526ff25412a8c411ee886024af3d85c0592c8b90446a`](https://stellar.expert/explorer/testnet/tx/ebc4756e1e5a6bbadb5a526ff25412a8c411ee886024af3d85c0592c8b90446a)
+- **Initialize Escrow Tx (Cross-contract Link)**: [`2bd6535bcec146191ddb260a66dca8ef59bfe9358e0fd0db9c7877aa2c82923e`](https://stellar.expert/explorer/testnet/tx/2bd6535bcec146191ddb260a66dca8ef59bfe9358e0fd0db9c7877aa2c82923e)
+- **Initialize Job Tx (Cross-contract Link)**: [`1feb462095db6093100083485fb138a1aafb688006e0ae0da32848d44dcbe6e8`](https://stellar.expert/explorer/testnet/tx/1feb462095db6093100083485fb138a1aafb688006e0ae0da32848d44dcbe6e8)
 
 ---
 
