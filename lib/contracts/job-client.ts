@@ -116,7 +116,7 @@ export class JobContractClient {
         StellarSdk.nativeToScVal(params.publicKey, { type: 'address' }),
         StellarSdk.nativeToScVal(params.title, { type: 'string' }),
         StellarSdk.nativeToScVal(params.description, { type: 'string' }),
-        StellarSdk.nativeToScVal(milestoneVals),
+        StellarSdk.xdr.ScVal.scvVec(milestoneVals),
       ],
     });
   }
