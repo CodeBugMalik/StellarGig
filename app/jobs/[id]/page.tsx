@@ -13,7 +13,9 @@ import type { Job, TransactionStatus } from '@/lib/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Skeleton from '@/components/ui/Skeleton';
-import MilestoneTracker from '@/components/jobs/MilestoneTracker';
+import MilestoneTimeline from '@/components/jobs/MilestoneTimeline';
+import EscrowStatusBar from '@/components/jobs/EscrowStatusBar';
+import LeaveReviewModal from '@/components/jobs/LeaveReviewModal';
 import EscrowStatus from '@/components/escrow/EscrowStatus';
 import ActivityFeed from '@/components/dashboard/ActivityFeed';
 import ConfirmModal from '@/components/ui/ConfirmModal';
@@ -49,6 +51,9 @@ export default function JobDetailPage() {
     action: () => Promise<{ hash: string }>;
     successMsg: string;
   } | null>(null);
+
+  // Review Modal State
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   const fetchJob = useCallback(async () => {
     if (!publicKey) return;
@@ -163,12 +168,18 @@ export default function JobDetailPage() {
           <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-slate-400">
             <span className="flex items-center gap-1.5">
               <FiUser className="h-4 w-4" />
-              Client: {stellar.formatAddress(job.client, 6, 6)}
+              Client:{' '}
+              <a href={`/profile/${job.client}`} className="hover:text-white transition-colors font-mono">
+                {stellar.formatAddress(job.client, 6, 6)}
+              </a>
             </span>
-            {job.freelancer && (
+            {job.freelancer && job.freelancer !== job.client && (
               <span className="flex items-center gap-1.5">
                 <FiUser className="h-4 w-4" />
-                Freelancer: {stellar.formatAddress(job.freelancer, 6, 6)}
+                Freelancer:{' '}
+                <a href={`/profile/${job.freelancer}`} className="hover:text-white transition-colors font-mono">
+                  {stellar.formatAddress(job.freelancer, 6, 6)}
+                </a>
               </span>
             )}
             <span className="flex items-center gap-1.5">
@@ -229,7 +240,11 @@ export default function JobDetailPage() {
       {/* Main content grid */}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">
-          <MilestoneTracker milestones={job.milestones} />
+          {/* Milestone Timeline (new for L5) */}
+          <div className="card">
+            <h3 className="mb-4 text-sm font-semibold text-white">Milestone Progress</h3>
+            <MilestoneTimeline milestones={job.milestones} />
+          </div>
 
           {/* Action buttons */}
           <div className="card space-y-3">
@@ -357,14 +372,35 @@ export default function JobDetailPage() {
             )}
 
             {job.status === 'completed' && (
-              <p className="text-center text-sm text-emerald-400">
-                ✓ All milestones completed. Payments released.
-              </p>
+              <div className="space-y-3">
+                <p className="text-center text-sm text-emerald-400">
+                  ✓ All milestones completed. Payments released.
+                </p>
+                {publicKey && (isClient || isFreelancer) && (
+                  <Button
+                    onClick={() => setReviewOpen(true)}
+                    icon={<FiCheckCircle className="h-4 w-4" />}
+                    className="w-full"
+                  >
+                    Leave a Review
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>
 
         <div className="space-y-6">
+          {/* Escrow status bar (new for L5) */}
+          {escrow && (
+            <div className="card">
+              <h3 className="mb-3 text-sm font-semibold text-white">Escrow Status</h3>
+              <EscrowStatusBar
+                totalAmount={escrow.totalAmount}
+                releasedAmount={escrow.releasedAmount}
+              />
+            </div>
+          )}
           <EscrowStatus escrow={escrow} loading={escrowLoading} />
           <ActivityFeed events={events} loading={eventsLoading} />
         </div>
@@ -379,6 +415,16 @@ export default function JobDetailPage() {
         amount={confirmConfig?.amount}
         loading={txStatus === 'pending'}
       />
+
+      {/* Leave Review Modal */}
+      {reviewOpen && publicKey && job && (
+        <LeaveReviewModal
+          jobId={job.id}
+          reviewee={isClient ? job.freelancer : job.client}
+          publicKey={publicKey}
+          onClose={() => setReviewOpen(false)}
+        />
+      )}
     </div>
   );
 }
