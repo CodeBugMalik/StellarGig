@@ -71,3 +71,22 @@ export interface MilestoneInput {
   description: string;
   amount: string;
 }
+
+/* ─── Reputation Types ─── */
+
+export interface Review {
+  jobId: number;
+  reviewer: string;
+  reviewee: string;
+  rating: number;      // 1–5
+  comment: string;
+  timestamp: number;   // ledger sequence
+}
+
+export interface ReputationStats {
+  totalReviews: number;
+  totalRating: number;   // sum of all star values
+  jobsCompleted: number;
+  totalEarned: string;   // XLM stroops as string
+  avgRating: number;     // computed: totalRating / totalReviews
+}

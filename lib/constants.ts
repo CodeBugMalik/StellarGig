@@ -4,6 +4,9 @@ export const JOB_CONTRACT_ID =
 export const ESCROW_CONTRACT_ID =
   process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ID || '';
 
+export const REPUTATION_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_REPUTATION_CONTRACT_ID || '';
+
 export const STELLAR_RPC_URL =
   process.env.NEXT_PUBLIC_STELLAR_RPC_URL || 'https://soroban-rpc.testnet.stellar.org';
 
