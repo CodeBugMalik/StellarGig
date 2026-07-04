@@ -34,6 +34,7 @@ pub enum DataKey {
     ClientJobs(Address),
     FreelancerJobs(Address),
     EscrowContract,
+    ReputationContract,
     Initialized,
 }
 
@@ -321,6 +322,26 @@ impl JobContract {
         env.storage().instance().set(&DataKey::Job(job_id), &job);
         env.events()
             .publish(("milestone", "approved"), (job_id, milestone_index, amount));
+
+        // *** ICC: Notify Reputation Contract of job completion ***
+        if all_done {
+            if let Some(rep_contract) = env
+                .storage()
+                .instance()
+                .get::<DataKey, Address>(&DataKey::ReputationContract)
+            {
+                let rep_args: Vec<soroban_sdk::Val> = vec![
+                    &env,
+                    job.freelancer.into_val(&env),
+                    job.total_amount.into_val(&env),
+                ];
+                env.invoke_contract::<()>(
+                    &rep_contract,
+                    &Symbol::new(&env, "record_completion"),
+                    rep_args,
+                );
+            }
+        }
     }
 
     /// Client disputes a milestone.
@@ -515,6 +536,23 @@ impl JobContract {
         env.events().publish(("job", "funded"), job_id);
     }
 
+    /// Admin: register the Reputation Contract address for ICC.
+    /// Can only be called once (guards against re-initialization).
+    pub fn set_reputation_contract(env: Env, caller: Address, reputation_contract: Address) {
+        Self::check_initialized(&env);
+        caller.require_auth();
+        // Only allow setting if not already set
+        if env.storage().instance().has(&DataKey::ReputationContract) {
+            env.panic_with_error(Error::AlreadyInitialized);
+        }
+        env.storage()
+            .instance()
+            .set(&DataKey::ReputationContract, &reputation_contract);
+        env.storage().instance().extend_ttl(4096, 50000);
+        env.events()
+            .publish(("contract", "reputation_linked"), reputation_contract);
+    }
+
     /* ─── Read functions ─── */
 
     pub fn get_job(env: Env, job_id: u64) -> Job {
@@ -547,6 +585,27 @@ impl JobContract {
             .instance()
             .get(&DataKey::FreelancerJobs(freelancer))
             .unwrap_or(vec![&env])
+    }
+
+    /// Returns the numeric discriminant of the job's status.
+    /// Used by the Reputation Contract ICC to verify completion.
+    /// Open=0, Funded=1, InProgress=2, UnderReview=3, Completed=4, Disputed=5, Cancelled=6
+    pub fn get_job_status(env: Env, job_id: u64) -> u32 {
+        env.storage().instance().extend_ttl(4096, 50000);
+        let job: Job = env
+            .storage()
+            .instance()
+            .get(&DataKey::Job(job_id))
+            .unwrap();
+        match job.status {
+            JobStatus::Open       => 0,
+            JobStatus::Funded     => 1,
+            JobStatus::InProgress => 2,
+            JobStatus::UnderReview=> 3,
+            JobStatus::Completed  => 4,
+            JobStatus::Disputed   => 5,
+            JobStatus::Cancelled  => 6,
+        }
     }
 
     /* ─── Helpers ─── */
