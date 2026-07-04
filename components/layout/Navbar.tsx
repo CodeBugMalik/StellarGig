@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FiMenu, FiX, FiZap } from 'react-icons/fi';
 import WalletButton from '@/components/wallet/WalletButton';
+import NotificationBell from '@/components/layout/NotificationBell';
 import { initAnalytics } from '@/lib/analytics';
 
 const navLinks = [
@@ -48,6 +49,7 @@ export default function Navbar() {
 
         {/* Right section */}
         <div className="flex items-center gap-3">
+          <NotificationBell />
           <div className="hidden sm:block">
             <WalletButton />
           </div>
