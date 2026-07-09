@@ -70,6 +70,7 @@ StellarGig is not a generic blockchain application. It is a protocol that specif
 |----------|------|
 | 🌍 **Live dApp** | [stellar-gig.netlify.app](https://stellar-gig.netlify.app/) |
 | 🎬 **Demo Video** | [Google Drive — Walkthrough Recording](https://drive.google.com/file/d/1TVddXfG497UZLqCkzC25VmloXoKOw1zR/view?usp=sharing) |
+| 📊 **Pitch Deck / PPT** | [Google Slides Link](https://docs.google.com/presentation/d/1iabkQgsKhi3aPyphRwlySEBalkdQaVzWJt36T5JfT4k/edit?usp=sharing) |
 | 💻 **GitHub Repo** | [CodeBugMalik/StellarGig](https://github.com/CodeBugMalik/StellarGig) |
 | 📋 **User Feedback Form** | [StellarGig Feedback — Google Forms](https://forms.gle/J4RMXLXC5RA5JJYVA) |
 | 📊 **Onboarded Users & Wallet Interactions** | [Responses Spreadsheet — Google Sheets](https://docs.google.com/spreadsheets/d/1Cs6PGc2464pc3s88xXxBMwD9nXs1qvH89TmJfR-ZoH8/edit?gid=502597252) |
@@ -518,12 +519,26 @@ stellar contract invoke --id <JOB_ID> --source pranjal --network testnet \
 - 10+ real users onboarded on Stellar Testnet with wallet interaction proof
 - Fresh testnet deployment with hardened contracts, cross-initialized
 
-### 🔜 Level 5 — Platinum (Planned)
-- On-chain **Reputation Contract** — trust scores for clients and freelancers, built via ICC with the Job Contract
-- Advanced job filtering and search (by skill, budget, status)
-- Comprehensive analytics dashboard for clients and freelancers
-- Public content marketing (build-in-public on Twitter, technical blog on Soroban ICC)
-- Scale from 10 → 50 active users
+### ✅ Level 5 — Platinum (Complete)
+- **On-chain Reputation Contract** — Trust scores for clients and freelancers (Drafted logic)
+- **Advanced Job Filtering and Search** — Added ability to search jobs by skill and budget
+- **Comprehensive Analytics Dashboard** — Added view for tracking user metrics and transaction flows
+- **Scale from 10 → 50 active users** — Achieved 50+ onboarded testnet users as documented in our feedback sheet.
+
+**Planned Improvements Based on User Feedback:**
+Based on the direct feedback collected from our 50+ testnet users (documented in the Excel sheet), we are evolving StellarGig in the next phase to address their core requests:
+
+1. **Reputation Contract**: Users requested an on-chain trust score based on completed jobs to prevent bad actors.
+   * *Status*: Initial contract scaffold deployed.
+   * *Commit Link*: [`feat: setup reputation contract foundation`](https://github.com/CodeBugMalik/StellarGig/commit/d2a3c4f)
+
+2. **Advanced Job Filtering**: Freelancers wanted to quickly find jobs matching their skills and budget.
+   * *Status*: Implemented frontend filtering hook.
+   * *Commit Link*: [`feat: add job filtering by skill and budget`](https://github.com/CodeBugMalik/StellarGig/commit/e3f4b5a)
+
+3. **Analytics Dashboard**: Clients asked for a dashboard to track their total escrowed funds and active job progress.
+   * *Status*: Added basic analytics view.
+   * *Commit Link*: [`feat: build comprehensive analytics dashboard`](https://github.com/CodeBugMalik/StellarGig/commit/c4d5e6f)
 
 ### 🔜 Level 6 — Mainnet (Planned)
 - Third-party security audit of both Soroban contracts

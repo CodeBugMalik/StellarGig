@@ -1,0 +1,789 @@
+# StellarGig — Mainnet Scaling Master Plan
+
+> From Level 3 Testnet MVP → Level 6 Mainnet Production with 200 IQ Strategic Thinking
+
+---
+
+## 📋 IDEA SUBMISSION
+
+---
+
+### 1. Problem Statement
+
+**The $1.5 Trillion Freelance Economy is Broken by Three Systemic Failures:**
+
+| Problem | Impact | Who Suffers |
+|---------|--------|-------------|
+| **Predatory Platform Fees** | Upwork charges 10-20%, Fiverr takes 20% + buyer fees | Freelancers lose $150B+ annually to intermediaries |
+| **Trust Deficit & Payment Fraud** | 71% of freelancers report non-payment or delayed payment at least once | Freelancers carry all the risk; clients fear undelivered work |
+| **Delayed Settlements** | Payouts take 5-14 business days through legacy banking rails | Cash flow crisis for small freelancers in developing nations |
+| **No Cross-Border Parity** | Wire transfers cost $25-50, take 3-5 days, and exclude the unbanked | 1.4 billion adults worldwide are unbanked but have smartphones |
+| **Opaque Dispute Resolution** | Centralized platforms make arbitrary decisions behind closed doors | Both parties lose trust; no on-chain audit trail |
+
+**StellarGig solves all five** by replacing the entire intermediary layer with programmable smart contracts on Stellar Soroban — milestone-based escrow, automated payment release via inter-contract communication, instant settlement in XLM, and transparent on-chain dispute records.
+
+---
+
+### 2. Why Stellar?
+
+Stellar is not just "a blockchain" — it is the **only L1 specifically engineered for payments and financial inclusion**, making it the natural home for a freelance payment protocol:
+
+| Stellar Advantage | Why It Matters for StellarGig | Competitor Comparison |
+|---|---|---|
+| **~5 second finality** | Freelancers get paid in seconds, not days | Ethereum: 12+ min; Bitcoin: 60+ min |
+| **$0.00001 transaction fees** | Micro-milestones become viable (pay $5 for a logo sketch) | Ethereum: $2-50 per tx; Solana: $0.01 |
+| **Soroban Smart Contracts** | Full programmable escrow with inter-contract calls (ICC) | Mature, purpose-built for financial logic |
+| **Built-in Anchor/SEP ecosystem** | SEP-24/31 enables fiat on/off ramps (USD, EUR, NGN, INR) | No other chain has standardized fiat rails |
+| **Stellar Asset issuance** | Future: Issue platform reputation tokens, freelancer badges as NFTs | Native asset support, no ERC-20 overhead |
+| **Global reach + inclusion focus** | SDF's mission aligns — banking the unbanked freelancers in Africa, SE Asia, LatAm | Ethereum/Solana optimize for DeFi/speculation |
+| **Fee Bump Transactions** | Sponsor gas for new users → true gasless onboarding | Unique to Stellar; no equivalent on most chains |
+| **Multi-signature native support** | Multi-party approvals for high-value contracts, team wallets | Built into the protocol, not a smart contract hack |
+
+**Strategic Thesis**: StellarGig doesn't just *use* Stellar — it *needs* Stellar. No other chain offers sub-cent fees + 5s finality + native fiat rails + fee sponsorship in one package. This is not a "deploy anywhere" dApp; it's a Stellar-native protocol.
+
+---
+
+### 3. Target Users
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        TARGET USER PYRAMID                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  TIER 1 — Early Adopters (Level 4: 10 users)                       │
+│  ├─ Web3-native freelancers (developers, designers, writers)        │
+│  ├─ Stellar ecosystem builders needing freelance talent             │
+│  ├─ Crypto-curious freelancers burned by Upwork/Fiverr fees        │
+│  └─ RiseIn community members (built-in network)                    │
+│                                                                     │
+│  TIER 2 — Growth Phase (Level 5: 50 users)                         │
+│  ├─ DAOs and Web3 startups outsourcing bounties/tasks              │
+│  ├─ Open-source contributors seeking paid gigs                      │
+│  ├─ Cross-border freelancers (Africa, SE Asia, Eastern Europe)      │
+│  └─ Small agencies managing multiple freelancer payouts             │
+│                                                                     │
+│  TIER 3 — Mainnet Scale (Level 6: 20+ mainnet users)               │
+│  ├─ Professional freelancers switching from Upwork/Fiverr          │
+│  ├─ Enterprise teams needing auditable contractor payments          │
+│  ├─ Anchor-connected users doing fiat↔crypto conversions           │
+│  └─ Stellar ecosystem projects (SDF grants, partnerships)          │
+│                                                                     │
+│  TIER 4 — Long-term Vision (Post-Level 6)                          │
+│  ├─ Unbanked freelancers in developing nations                      │
+│  ├─ Creator economy (music, art, content via milestone payments)   │
+│  └─ B2B contractor payments (invoicing + escrow + compliance)      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**User Acquisition Channels (by level):**
+
+| Level | Channel | Strategy |
+|-------|---------|----------|
+| L4 (10 users) | RiseIn Discord + Twitter, personal network | DM 30 people, offer to fund test escrows for them |
+| L5 (50 users) | Stellar Discord, Reddit r/stellar, Dev communities | Content marketing, "I built X on Soroban" threads |
+| L6 (20 mainnet) | ProductHunt launch, Stellar ecosystem partnerships | Co-marketing with anchors, SDF grant application |
+
+---
+
+### 4. Technical Architecture
+
+```
+                              ┌────────────────────────────────────────────┐
+                              │           STELLAR NETWORK                  │
+                              │  ┌──────────────┐   ┌──────────────────┐  │
+                              │  │ Job Contract  │──→│ Escrow Contract   │  │
+                              │  │              │   │                  │  │
+                              │  │ create_job   │   │ fund_job         │  │
+                              │  │ accept_job   │ICC│ release_milestone│  │
+                              │  │ approve      │──→│ refund           │  │
+                              │  │ dispute      │   │ get_escrow       │  │
+                              │  │ cancel       │   │                  │  │
+                              │  └──────┬───────┘   └────────┬─────────┘  │
+                              │         │                    │             │
+                              │  ┌──────┴────────────────────┴─────────┐  │
+                              │  │     [L5] Reputation Contract        │  │
+                              │  │     [L6] Fee Sponsor Contract       │  │
+                              │  │     [L6] Multisig Escrow Contract   │  │
+                              │  └─────────────────────────────────────┘  │
+                              └──────────────────┬─────────────────────────┘
+                                                 │ Soroban RPC
+                              ┌──────────────────┴─────────────────────────┐
+                              │         MIDDLEWARE / API LAYER              │
+                              │                                            │
+                              │  ┌─────────────┐  ┌────────────────────┐  │
+                              │  │ StellarHelper│  │ Contract Clients   │  │
+                              │  │  (SDK v12)   │  │ (Job + Escrow TS)  │  │
+                              │  └──────┬───────┘  └────────┬───────────┘  │
+                              │         │                   │              │
+                              │  ┌──────┴───────────────────┴───────────┐  │
+                              │  │  [L5] Analytics Service (PostHog)    │  │
+                              │  │  [L6] Monitoring (Sentry + Uptime)   │  │
+                              │  │  [L6] Indexer (Event Aggregation)    │  │
+                              │  └─────────────────────────────────────┘  │
+                              └──────────────────┬─────────────────────────┘
+                                                 │
+                              ┌──────────────────┴─────────────────────────┐
+                              │            FRONTEND (Next.js 14)            │
+                              │                                            │
+                              │  ┌──────────┐ ┌───────┐ ┌──────────────┐  │
+                              │  │ Landing  │ │ Jobs  │ │  Dashboard   │  │
+                              │  │ Page     │ │ CRUD  │ │  + Analytics │  │
+                              │  └──────────┘ └───────┘ └──────────────┘  │
+                              │  ┌──────────┐ ┌───────┐ ┌──────────────┐  │
+                              │  │ Create   │ │Detail │ │  [L5] User   │  │
+                              │  │ Job Form │ │+ Escrow│ │  Profiles   │  │
+                              │  └──────────┘ └───────┘ └──────────────┘  │
+                              │  ┌──────────────────────────────────────┐  │
+                              │  │ StellarWalletsKit (Freighter/xBull)  │  │
+                              │  │ [L6] Fee-sponsored wallet connect    │  │
+                              │  └──────────────────────────────────────┘  │
+                              └────────────────────────────────────────────┘
+```
+
+**Data Flow — Complete Lifecycle:**
+
+```
+Client creates job → Job Contract stores → Client funds → Escrow Contract locks XLM
+                                                              │
+Freelancer accepts job → Job Contract updates status          │
+                                                              │
+Freelancer submits milestone → Job Contract marks "submitted" │
+                                                              │
+Client approves milestone → Job Contract ──ICC──→ Escrow Contract releases payment
+                                                              │
+                     All milestones approved → Job "completed" + Escrow deactivated
+```
+
+---
+
+### 5. Complexity Evaluation
+
+| Complexity Dimension | What Makes It Hard | Level |
+|---|---|---|
+| **Inter-Contract Communication (ICC)** | Job contract calls Escrow contract via `env.invoke_contract` — requires precise cross-contract initialization, shared state coordination, and atomic execution | 🔴 High |
+| **State Machine Management** | 7 job statuses × 4 milestone statuses = 28 valid state transitions that must be enforced at the contract level with `require_auth()` | 🔴 High |
+| **Multi-Wallet Integration** | Supporting Freighter, xBull, and Albedo via StellarWalletsKit with graceful fallbacks for each | 🟡 Medium |
+| **Real-Time Event Streaming** | Polling Soroban contract events from the RPC layer, parsing `ScVal` topics, and rendering live activity feeds | 🟡 Medium |
+| **Transaction Lifecycle** | Build → Simulate → Assemble → Sign → Submit → Poll — 6-step async pipeline with error handling at each stage | 🟡 Medium |
+| **[L4] Production Hardening** | Error boundaries, loading skeletons, mobile responsive, monitoring, CI/CD with contract deploy | 🟡 Medium |
+| **[L5] Reputation System** | On-chain reputation scoring based on job completion rate, dispute history — new contract with ICC to Job | 🔴 High |
+| **[L6] Fee Sponsorship** | Implementing Stellar fee bump transactions so new users never pay gas — requires a fee-sponsor account | 🔴 High |
+| **[L6] Multi-signature Escrow** | High-value jobs requiring M-of-N approval before escrow release — extends escrow contract significantly | 🔴 High |
+| **[L6] Mainnet Security** | Smart contract audit, input validation hardening, reentrancy guards, storage optimization | 🔴 High |
+
+---
+
+### 6. Roadmap
+
+---
+
+## 🎯 LEVEL 4 — PRODUCTION MVP (Black Belt)
+
+### Objective
+Transform StellarGig from a Level 3 demo into a **production-ready MVP** with real users, monitoring, and polished UX.
+
+---
+
+#### Phase 4.1 — Production Hardening (Week 1-2)
+
+**Smart Contract Improvements:**
+- [ ] Add input validation guards (zero-amount prevention, empty string checks, max milestone limit)
+- [ ] Add `require_auth` on `mark_funded` to prevent unauthorized status changes
+- [ ] Add TTL extension calls (`env.storage().instance().extend_ttl()`) to prevent data expiry
+- [ ] Implement proper error types using `contracterror` macro instead of raw `panic!`
+- [ ] Add event emission for ALL state changes (currently missing some transitions)
+- [ ] Deploy fresh testnet contracts with all improvements
+
+**Frontend Production Quality:**
+- [ ] Implement proper loading skeletons for every async operation (job list, detail, escrow status)
+- [ ] Add comprehensive error boundaries with retry-able error states
+- [ ] Implement toast notification system for all user actions (success/error/pending)
+- [ ] Add transaction confirmation modals before signing
+- [ ] Optimize mobile responsive design — test at 375px, 428px, 768px, 1024px, 1440px
+- [ ] Add proper `<meta>` SEO tags, Open Graph images, and structured data
+- [ ] Implement progressive loading (skeleton → data → interactive)
+
+**Monitoring & Analytics:**
+- [ ] Integrate **PostHog** (or Mixpanel) for product analytics
+  - Track: wallet connections, job creations, escrow funding, milestone completions
+  - Funnel: Landing → Connect Wallet → Create Job → Fund → Complete
+- [ ] Integrate **Sentry** for error monitoring and performance tracking
+- [ ] Set up **UptimeRobot** or **BetterUptime** for deployment health monitoring
+- [ ] Add environment-aware configuration (testnet vs mainnet toggle)
+
+**CI/CD & DevOps:**
+- [ ] Enhance GitHub Actions CI to include lighthouse performance checks
+- [ ] Add automated contract deployment workflow with environment variables
+- [ ] Implement staging environment (separate from production)
+- [ ] Add branch protection rules on `main`
+
+---
+
+#### Phase 4.2 — User Onboarding (Week 2-3)
+
+**Onboarding Strategy for 10+ Users:**
+
+```
+Target: 10 real users with wallet interactions on testnet
+Strategy: Personal outreach + incentivized testing
+```
+
+| Step | Action | Expected Yield |
+|------|--------|----------------|
+| 1 | Create Google Form: Name, Email, Wallet Address, Feedback (1-5 rating), Comments | Infrastructure |
+| 2 | Post in RiseIn Discord (#showcase channel) with demo video + form link | 5-8 users |
+| 3 | Post in Stellar Dev Discord with "Built on Soroban" thread | 3-5 users |
+| 4 | DM 15 personal contacts in crypto/dev communities | 3-5 users |
+| 5 | Create a Twitter/X thread "I built a freelance escrow dApp on Stellar" | 2-3 users |
+| 6 | Fund test wallets with Friendbot XLM for new users | Remove friction |
+
+**Guided Test Script for Users:**
+1. Connect wallet (Freighter recommended)
+2. Create a test job with 2 milestones
+3. Fund the escrow
+4. Accept the job from a second wallet
+5. Submit milestone → Approve → Verify payment released
+6. Fill out feedback form
+
+**Proof Collection:**
+- [ ] Export Google Form responses to Excel
+- [ ] Screenshot wallet interaction transactions on stellar.expert
+- [ ] Collect at least 10 unique wallet addresses with on-chain activity
+- [ ] Compile user feedback summary document
+
+---
+
+#### Phase 4.3 — Documentation & Demo (Week 3-4)
+
+**README Updates:**
+- [ ] Add architecture diagram (Mermaid or ASCII)
+- [ ] Add deployment instructions for both testnet and mainnet
+- [ ] Add user guide with screenshots for every flow
+- [ ] Link Google Form responses spreadsheet
+- [ ] Add improvement plan based on user feedback with git commit links
+
+**Demo Video (5-8 minutes):**
+- [ ] Show complete user flow: Connect → Create → Fund → Accept → Submit → Approve → Payment
+- [ ] Show mobile responsive design
+- [ ] Show analytics dashboard / monitoring setup
+- [ ] Show contract interactions on stellar.expert
+- [ ] Show error handling (disconnected wallet, insufficient balance, etc.)
+
+**Screenshots Required:**
+- [ ] Product UI (desktop + mobile)
+- [ ] Mobile responsive design (3+ breakpoints)
+- [ ] Analytics/monitoring dashboard
+- [ ] CI/CD pipeline passing
+- [ ] Contract deployment transactions
+
+---
+
+#### Level 4 Submission Checklist
+
+| Requirement | Status | Notes |
+|---|---|---|
+| Public GitHub repository | ⬜ | Already exists |
+| README with complete documentation | ⬜ | Needs production docs update |
+| Minimum 15+ meaningful commits | ⬜ | Currently has L3 commits; need 15+ new |
+| Live demo link | ⬜ | stellar-gig.netlify.app (update) |
+| Contract deployment address | ⬜ | Deploy improved contracts |
+| Screenshots: Product UI | ⬜ | Desktop + mobile |
+| Screenshots: Mobile responsive | ⬜ | 375px, 768px, 1440px |
+| Screenshots: Analytics/monitoring | ⬜ | PostHog + Sentry |
+| Demo video link | ⬜ | Google Drive / YouTube |
+| Proof of 10+ user wallet interactions | ⬜ | Excel export + on-chain proof |
+| Basic user feedback summary | ⬜ | From Google Form |
+
+---
+
+## 🎯 LEVEL 5 — USER GROWTH & PITCH (Green Belt)
+
+### Objective
+Scale from 10 → 50 users, add features from L4 feedback, create a professional pitch deck.
+
+---
+
+#### Phase 5.1 — Feature Improvements from User Feedback (Week 1-3)
+
+**Expected Feedback Patterns & Solutions:**
+
+| Likely Feedback | Feature Response | Complexity |
+|---|---|---|
+| "How do I know this freelancer is legit?" | **On-chain Reputation System** — new Soroban contract tracking completion rate, average rating | 🔴 High |
+| "I want to search/filter jobs" | **Job Search & Filtering** — by status, amount range, category tags | 🟡 Medium |
+| "The job detail page is confusing" | **Redesigned Job Detail** — clearer milestone timeline, visual escrow status bar | 🟢 Low |
+| "I want notifications when milestones change" | **In-app Notification Center** — polling contract events and showing alerts | 🟡 Medium |
+| "Can I see my earnings/spending history?" | **Enhanced Dashboard** — spending analytics, earnings chart, job history timeline | 🟡 Medium |
+| "I can't find my old jobs" | **Job Pagination & History** — paginated job listing with status filters | 🟡 Medium |
+
+**New Smart Contract — Reputation Contract:**
+
+```
+┌──────────────────────────────────┐
+│       Reputation Contract         │
+│                                  │
+│  - submit_review(job_id, rating) │
+│  - get_reputation(address)       │
+│  - get_reviews(address)          │
+│                                  │
+│  Data: completion_rate, avg_rating│
+│        total_earned, disputes     │
+│                                  │
+│  ICC: calls Job Contract to      │
+│       verify job completion       │
+└──────────────────────────────────┘
+```
+
+**Frontend New Pages/Components:**
+- [ ] `/profile/[address]` — Public freelancer/client profile with reputation score
+- [ ] `/jobs` improvements — Search bar, status filter dropdown, amount range slider
+- [ ] Notification bell in navbar with event-driven alerts
+- [ ] Dashboard analytics cards (total earned, total spent, jobs completed, avg rating)
+- [ ] "Leave Review" modal after job completion
+
+**UX/UI Improvements:**
+- [ ] Streamlined onboarding wizard (connect wallet → explore → create first job)
+- [ ] Animated milestone progress bar on job detail page
+- [ ] Dark/light theme toggle (stretch goal)
+- [ ] Keyboard shortcuts for power users (Ctrl+K for search)
+- [ ] Improved empty states with actionable CTAs
+
+---
+
+#### Phase 5.2 — User Growth to 50 (Week 2-4)
+
+**Growth Flywheel:**
+
+```
+Content Marketing → Users Try It → Feedback → Improve → More Content
+       ↑                                                      │
+       └──────────────────────────────────────────────────────┘
+```
+
+| Channel | Tactic | Expected Users |
+|---------|--------|----------------|
+| **RiseIn Community** | Showcase post, peer reviews, Discord engagement | 10-15 |
+| **Stellar Discord** | "Show and Tell" post, engage in #soroban-help | 5-10 |
+| **Twitter/X Threads** | Weekly build-in-public threads with screenshots | 5-10 |
+| **Reddit r/stellar** | "I built a freelance dApp" post with demo | 3-5 |
+| **Dev.to / Hashnode** | Technical blog: "Building Inter-Contract Communication on Soroban" | 5-8 |
+| **YouTube** | Demo walkthrough video, pin in README | 3-5 |
+| **Direct Outreach** | DM Web3 freelancers on Twitter, Lens, Farcaster | 5-10 |
+| **Referral** | Ask L4 users to invite 2 friends each (10×2 = 20 potential) | 5-10 |
+
+**Google Form v2 (Enhanced):**
+- Name, Email, Wallet Address
+- How did you find StellarGig? (dropdown)
+- What features do you want? (checkboxes)
+- Rate UX (1-5), Rate Design (1-5), Rate Usefulness (1-5)
+- Would you recommend to a friend? (NPS score)
+- Open-ended: biggest pain point?
+
+**Proof Requirements:**
+- [ ] Export all 50+ form responses to Excel
+- [ ] On-chain proof: 50 unique wallet addresses with transactions
+- [ ] Screenshot of analytics showing 50+ unique users
+- [ ] Transaction activity proof on stellar.expert
+
+---
+
+#### Phase 5.3 — Pitch Deck (Week 3-4)
+
+**Professional PPT Structure (15-20 slides):**
+
+| Slide | Content |
+|-------|---------|
+| 1 | **Cover**: StellarGig — Decentralized Freelance Escrow Protocol |
+| 2 | **Problem**: $1.5T freelance economy broken by fees, trust, delays (with stats) |
+| 3 | **Solution**: On-chain milestone escrow with inter-contract communication |
+| 4 | **Demo Screenshots**: 4 key screens (landing, create, escrow, dashboard) |
+| 5 | **Why Stellar**: 5-second finality, $0.00001 fees, fiat rails, fee sponsorship |
+| 6 | **How It Works**: 3-step visual flow (Create → Fund → Release) |
+| 7 | **Technical Architecture**: System diagram with contracts + frontend |
+| 8 | **Smart Contract Design**: ICC pattern, state machine, auth model |
+| 9 | **Market Opportunity**: $1.5T market, 1.57B freelancers by 2030, Web3 freelance TAM |
+| 10 | **Competitive Landscape**: vs Upwork, Fiverr, Braintrust, DeWork — positioning matrix |
+| 11 | **Traction**: 50 testnet users, X transactions, user feedback highlights |
+| 12 | **User Feedback**: NPS score, feature requests, testimonials |
+| 13 | **Growth Strategy**: Viral loops, community, content, partnerships |
+| 14 | **Revenue Model**: 1-2% protocol fee (vs 20% centralized), optional premium features |
+| 15 | **Roadmap**: L4 (MVP) → L5 (Growth) → L6 (Mainnet) → Post-L6 (Scale) |
+| 16 | **Advanced Features**: Fee sponsorship, multisig, SEP-24 anchors |
+| 17 | **Team**: Builder profile, contributions, Stellar ecosystem involvement |
+| 18 | **Ask**: SDF grant, ecosystem support, anchor partnerships |
+
+---
+
+#### Phase 5.4 — Demo Video (Week 4)
+
+**Full Product Walkthrough (8-12 minutes):**
+1. Introduction & problem statement (1 min)
+2. Connect wallet & onboarding flow (1 min)
+3. Create a job with milestones (2 min)
+4. Fund escrow & show on-chain transaction (2 min)
+5. Accept job as freelancer (1 min)
+6. Submit & approve milestones → escrow release (2 min)
+7. Dashboard & analytics (1 min)
+8. Mobile responsive demo (1 min)
+9. Show user feedback & growth metrics (1 min)
+
+---
+
+#### Level 5 Submission Checklist
+
+| Requirement | Status | Notes |
+|---|---|---|
+| Public GitHub repository | ⬜ | Updated |
+| Minimum 20+ meaningful commits | ⬜ | L4 commits + L5 feature commits |
+| Live deployed application | ⬜ | Updated deployment |
+| PPT/Pitch deck link | ⬜ | Google Slides / Canva |
+| Demo video link | ⬜ | YouTube / Google Drive |
+| Proof of 50+ users | ⬜ | Excel export + on-chain |
+| Screenshots of analytics/transaction activity | ⬜ | PostHog + stellar.expert |
+| Updated README and documentation | ⬜ | With feedback iteration summary |
+| User feedback iteration summary | ⬜ | Git commit links for each improvement |
+
+---
+
+## 🎯 LEVEL 6 — MAINNET DEPLOYMENT (Red/Black Belt)
+
+### Objective
+Deploy to Stellar mainnet with real money, achieve 20+ verified mainnet users, implement advanced features, contribute to the ecosystem.
+
+---
+
+#### Phase 6.1 — Mainnet Contract Preparation (Week 1-2)
+
+**Smart Contract Hardening for Mainnet:**
+
+> [!CAUTION]
+> Mainnet means **real money**. Every vulnerability is a potential loss of funds.
+
+- [ ] **Security Audit / Review:**
+  - Option A: Formal audit by a recognized Soroban auditor (OtterSec, Halborn, etc.)
+  - Option B: Security review by RiseIn mentors/team (submit contracts for review)
+  - Document all findings and remediations
+
+- [ ] **Contract Hardening Checklist:**
+  - [ ] Replace all `panic!` with proper `contracterror` enum variants
+  - [ ] Add overflow/underflow protection on all arithmetic
+  - [ ] Validate ALL inputs (zero amounts, empty strings, invalid addresses)
+  - [ ] Add access control: only Job Contract can call `release_milestone` on Escrow
+  - [ ] Add reentrancy guards on state-changing functions
+  - [ ] Add maximum limits (max milestones per job, max amount per milestone)
+  - [ ] Implement proper storage TTL management for all data keys
+  - [ ] Optimize storage usage (use `persistent` vs `instance` vs `temporary` correctly)
+  - [ ] Add upgrade mechanism (admin-controlled contract upgrade path)
+
+- [ ] **Mainnet Deployment Process:**
+  ```
+  1. Deploy Escrow Contract to Stellar Mainnet
+  2. Deploy Job Contract to Stellar Mainnet
+  3. Initialize cross-contract links
+  4. Verify contracts on stellar.expert
+  5. Update frontend environment variables
+  6. Test with small amounts first ($0.50 XLM)
+  ```
+
+- [ ] **Network Configuration:**
+  - Update `NETWORK_PASSPHRASE` → `'Public Global Stellar Network ; September 2015'`
+  - Update `HORIZON_URL` → `'https://horizon.stellar.org'`
+  - Update `STELLAR_RPC_URL` → `'https://soroban-rpc.mainnet.stellar.gateway.fm'`
+  - Update `EXPLORER_BASE_URL` → `'https://stellar.expert/explorer/public'`
+  - Add network switcher UI (testnet ↔ mainnet)
+
+---
+
+#### Phase 6.2 — Advanced Features (Choose 1+, implement more for differentiation) (Week 2-3)
+
+##### 🎯 Advanced Feature 1: Fee Sponsorship (Gasless Transactions) — RECOMMENDED
+
+**Why this is the highest-impact choice:**
+- Eliminates the #1 onboarding friction (new users need XLM for gas)
+- Demonstrates deep Stellar protocol understanding
+- Directly enables unbanked user acquisition
+
+**Implementation Plan:**
+
+```
+┌─────────────────────────────────────────────┐
+│           Fee Sponsorship Architecture       │
+│                                             │
+│  ┌──────────┐                               │
+│  │ Sponsor  │ ← Funded with XLM reserve     │
+│  │ Account  │                               │
+│  └────┬─────┘                               │
+│       │ fee_bump_transaction()               │
+│       ▼                                     │
+│  ┌──────────────────────────┐               │
+│  │  User's Transaction      │               │
+│  │  (inner tx, no gas needed)│               │
+│  └──────────────────────────┘               │
+│       │                                     │
+│       ▼                                     │
+│  ┌──────────────────────────┐               │
+│  │  Wrapped Fee Bump Tx      │               │
+│  │  (sponsor pays base fee)  │               │
+│  └──────────────────────────┘               │
+└─────────────────────────────────────────────┘
+```
+
+- [ ] Create a backend API endpoint that wraps user transactions in fee bump envelopes
+- [ ] Fund a sponsor account with enough XLM for initial user base
+- [ ] Add rate limiting (max N sponsored txs per user per day)
+- [ ] Track sponsor balance and alert when low
+- [ ] Frontend: detect if user has < 1 XLM and auto-sponsor
+
+##### 🎯 Advanced Feature 2: Multi-signature Escrow
+
+**For high-value contracts (>500 XLM):**
+
+```
+┌────────────────────────────────────────┐
+│     Multi-sig Escrow Release           │
+│                                        │
+│  Standard: Client approves → released  │
+│                                        │
+│  Multi-sig (high value):               │
+│    Client approves  ─┐                 │
+│    Arbitrator signs  ─┤→ 2-of-3 met    │
+│    Freelancer signs  ─┘    → released  │
+│                                        │
+│  Dispute resolution:                   │
+│    Arbitrator + Client → refund        │
+│    Arbitrator + Freelancer → release   │
+└────────────────────────────────────────┘
+```
+
+- [ ] New `MultisigEscrowContract` with configurable M-of-N threshold
+- [ ] Arbitrator registry (trusted community members)
+- [ ] UI for multi-party approval workflow
+
+##### 🎯 Advanced Feature 3: Cross-Border Flows (SEP-24/SEP-31)
+
+- [ ] Integrate with a Stellar anchor (e.g., MoneyGram Access, Beans App)
+- [ ] Allow users to deposit fiat → XLM → Escrow → XLM → fiat
+- [ ] Implement SEP-24 interactive deposit/withdrawal flow
+- [ ] Display equivalent fiat value alongside XLM amounts
+
+##### 🎯 Advanced Feature 4: Account Abstraction (Smart Wallet)
+
+- [ ] Custom authentication contract (social login → Stellar keypair)
+- [ ] Session keys for repeat transactions without re-signing
+- [ ] Recovery mechanism (social recovery via trusted contacts)
+
+---
+
+#### Phase 6.3 — Mainnet User Onboarding (Week 2-4)
+
+**Strategy: 20+ Verified Mainnet Users**
+
+| Approach | Details |
+|----------|---------|
+| **Seed funding** | Fund first 20 users with 5 XLM each (100 XLM total ≈ $10) |
+| **Fee sponsorship** | If implemented, users need 0 XLM to start |
+| **Guided onboarding** | Create a "First Job on Mainnet" tutorial page in-app |
+| **Real use cases** | Post actual freelance gigs (logo design, blog writing) for small amounts |
+| **Community bounties** | Offer 2-5 XLM bounties for testing specific features |
+
+**Google Form v3 (Mainnet):**
+- All L5 fields
+- Mainnet wallet address (separate from testnet)
+- Have you used mainnet XLM before? (Y/N)
+- Transaction hash of first interaction
+- Consent for public testimonial
+
+**Proof Collection:**
+- [ ] 20+ unique mainnet wallet addresses
+- [ ] On-chain transaction hashes on stellar.expert (public network)
+- [ ] Excel export of all form responses
+- [ ] Screenshot of mainnet contract state showing active escrows
+
+---
+
+#### Phase 6.4 — Product Marketing (Week 3-4)
+
+**Mandatory: Twitter/X Launch Post**
+
+```
+🚀 Excited to launch StellarGig on Stellar Mainnet!
+
+StellarGig is a decentralized freelance escrow platform:
+✅ Milestone-based payments
+✅ Inter-contract smart escrow
+✅ Gasless transactions (fee sponsorship)
+✅ Sub-cent fees, 5-second settlement
+
+Try it live: [link]
+Demo: [video link]
+
+Built on @StellarOrg Soroban 🔗
+
+#Stellar #Soroban #Web3 #Freelancing #DeFi
+@StellarOrg @StellarCommunity @RiseIn
+```
+
+**Additional Marketing:**
+- [ ] Thread (5-7 tweets) explaining the technical architecture
+- [ ] Demo GIF/video for Twitter engagement
+- [ ] LinkedIn post targeting professional freelancers
+- [ ] Cross-post to Stellar Reddit, Discord, and community forums
+
+---
+
+#### Phase 6.5 — Ecosystem Contribution (Choose 1+, Week 3-4)
+
+| Option | Details | Effort |
+|--------|---------|--------|
+| **Technical Blog** | "Building Inter-Contract Communication on Soroban: A Production Guide" — publish on Dev.to, Mirror, or personal blog | 🟡 Medium |
+| **Tutorial** | Step-by-step tutorial: "Build Your First Escrow dApp on Stellar" with code snippets | 🟡 Medium |
+| **Workshop** | Host a 30-60 min live workshop on building Soroban dApps (record for YouTube) | 🔴 High |
+| **Open-Source Contribution** | Contribute a PR to stellar-sdk, soroban-examples, or stellar-docs | 🟡 Medium |
+| **Community Session** | Present StellarGig at a Stellar community call or RiseIn session | 🟢 Low |
+
+**Recommended: Technical Blog + Open-Source Contribution**
+
+Blog outline for "Inter-Contract Communication on Soroban":
+1. What is ICC and why it matters
+2. Setting up two contracts that talk to each other
+3. The `env.invoke_contract` pattern explained
+4. Error handling across contract boundaries
+5. Testing ICC in Soroban test environment
+6. Production considerations (gas limits, atomic execution)
+7. Full code walkthrough of StellarGig's ICC pattern
+
+---
+
+#### Phase 6.6 — Documentation & Polish (Week 4)
+
+- [ ] Complete README with:
+  - Mainnet contract addresses
+  - Mainnet deployment guide
+  - User guide with screenshots
+  - API documentation for contract functions
+  - Security audit/review findings
+  - User feedback spreadsheet link
+  - Improvement plan with git commit links
+  - Community contribution links
+
+- [ ] User-facing documentation:
+  - "Getting Started" guide
+  - FAQ page
+  - Troubleshooting guide
+  - Video tutorials
+
+- [ ] Technical documentation:
+  - Contract ABI documentation
+  - Event schema documentation
+  - State machine diagram
+  - Security model description
+
+---
+
+#### Level 6 Submission Checklist
+
+| Requirement | Status | Notes |
+|---|---|---|
+| Public GitHub repository | ⬜ | Final version |
+| Minimum 30+ meaningful commits | ⬜ | L4 + L5 + L6 commits |
+| Live mainnet application | ⬜ | Production URL |
+| Mainnet contract addresses | ⬜ | Job + Escrow (+ advanced contracts) |
+| Proof of 20+ mainnet users | ⬜ | Excel + on-chain |
+| Transaction activity proof | ⬜ | stellar.expert screenshots |
+| Audit/security review proof | ⬜ | Report or mentor sign-off |
+| Twitter/X launch post link | ⬜ | Published tweet URL |
+| Demo video link | ⬜ | Full product walkthrough |
+| Technical documentation | ⬜ | Complete README + docs |
+| User guide/documentation | ⬜ | Getting started guide |
+| Community contribution link | ⬜ | Blog / tutorial / PR link |
+
+---
+
+## 📊 COMMIT STRATEGY ACROSS ALL LEVELS
+
+> [!IMPORTANT]
+> Each commit must be **meaningful** — no empty commits, no "fix typo" padding. Each commit should represent a distinct feature, fix, or improvement.
+
+### Level 4 — Commits 1-15+
+
+| # | Commit Message | Type |
+|---|---|---|
+| 1 | `feat(contract): add contracterror enum replacing panic! macros` | Contract |
+| 2 | `feat(contract): add input validation guards for all public functions` | Contract |
+| 3 | `feat(contract): add TTL extension for persistent storage` | Contract |
+| 4 | `feat(contract): add access control on mark_funded` | Contract |
+| 5 | `feat(ui): implement loading skeleton components` | Frontend |
+| 6 | `feat(ui): add error boundaries with retry states` | Frontend |
+| 7 | `feat(ui): add transaction confirmation modals` | Frontend |
+| 8 | `feat(ui): mobile responsive polish (375px-1440px)` | Frontend |
+| 9 | `feat(analytics): integrate PostHog product analytics` | Monitoring |
+| 10 | `feat(monitoring): integrate Sentry error tracking` | Monitoring |
+| 11 | `feat(ci): add Lighthouse CI performance checks` | DevOps |
+| 12 | `feat(deploy): deploy hardened contracts to testnet` | Deploy |
+| 13 | `docs: add production README with user guide` | Docs |
+| 14 | `feat(onboarding): add guided first-job wizard` | UX |
+| 15 | `docs: add user feedback summary and improvement plan` | Docs |
+
+### Level 5 — Commits 16-20+
+
+| # | Commit Message | Type |
+|---|---|---|
+| 16 | `feat(contract): add Reputation contract with ICC` | Contract |
+| 17 | `feat(ui): add profile page with reputation score` | Frontend |
+| 18 | `feat(ui): add job search and filtering` | Frontend |
+| 19 | `feat(ui): add notification center with event polling` | Frontend |
+| 20 | `feat(dashboard): add earnings/spending analytics charts` | Frontend |
+| 21 | `feat(ux): improved onboarding wizard flow` | UX |
+| 22 | `docs: update README with 50-user feedback iteration` | Docs |
+
+### Level 6 — Commits 23-30+
+
+| # | Commit Message | Type |
+|---|---|---|
+| 23 | `feat(contract): harden contracts for mainnet security` | Contract |
+| 24 | `feat(contract): implement fee sponsorship via fee bump tx` | Advanced |
+| 25 | `feat(contract): deploy contracts to Stellar mainnet` | Deploy |
+| 26 | `feat(config): add mainnet network configuration and switcher` | Config |
+| 27 | `feat(ui): add network indicator and mainnet warnings` | Frontend |
+| 28 | `feat(security): implement rate limiting and input sanitization` | Security |
+| 29 | `docs: add security audit report and findings` | Docs |
+| 30 | `docs: publish technical blog on ICC pattern` | Ecosystem |
+| 31 | `docs: add mainnet deployment guide and user documentation` | Docs |
+| 32 | `feat(marketing): add social sharing and launch assets` | Marketing |
+
+---
+
+## 🧠 200 IQ STRATEGIC INSIGHTS
+
+### Why This Plan Wins
+
+1. **Compound Architecture**: Each level builds on the previous. The ICC pattern from L3 becomes the foundation for L5's Reputation Contract and L6's Multisig Escrow. Nothing is thrown away.
+
+2. **Real Problem, Real Users**: Unlike "hello world" dApps, freelance escrow solves a genuine $150B problem. This makes user acquisition organic rather than forced.
+
+3. **Stellar-Native, Not Chain-Agnostic**: By leveraging fee sponsorship, SEP anchors, and Stellar's native multisig, we prove this can ONLY exist on Stellar. Judges love chain-specific innovation.
+
+4. **Progressive Complexity**:
+   - L3: ICC between 2 contracts ✅
+   - L4: Production hardening + monitoring
+   - L5: 3rd contract (Reputation) with ICC to both existing contracts
+   - L6: Fee bump transactions + mainnet security + multisig
+
+5. **Ecosystem Contribution is Genuine**: The technical blog on ICC patterns will genuinely help Soroban developers — it's not just a checkbox exercise.
+
+6. **User Feedback Loop**: Every feature in L5 is explicitly tied to L4 feedback. This demonstrates product thinking, not just coding.
+
+### Risk Mitigation
+
+| Risk | Mitigation |
+|------|------------|
+| Can't get 50 testnet users | Start outreach from Day 1 of L5; use multiple channels simultaneously |
+| Smart contract vulnerability on mainnet | Security review before deployment; start with small amounts; have an emergency pause mechanism |
+| User confusion with Web3 onboarding | Fee sponsorship eliminates gas friction; guided wizard simplifies flow |
+| Low engagement after onboarding | In-app notifications, email follow-ups, gamified reputation system |
+| Mainnet XLM costs for sponsor account | Budget 200 XLM (~$20) for sponsor account; rate limit to 5 txs/user/day |
+
+---
+
+> **Bottom Line**: StellarGig is not just a project — it's a protocol. By Level 6, it should feel like a production product that real freelancers would use to get paid. Every technical decision, from ICC to fee sponsorship, is justified by a user need, not by a checklist requirement.
