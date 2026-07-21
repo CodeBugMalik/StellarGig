@@ -70,10 +70,10 @@ StellarGig is not a generic blockchain application. It is a protocol that specif
 |----------|------|
 | 🌍 **Live dApp** | [stellar-gig.netlify.app](https://stellar-gig.netlify.app/) |
 | 🎬 **Demo Video** | [Google Drive — Walkthrough Recording](https://drive.google.com/file/d/1TVddXfG497UZLqCkzC25VmloXoKOw1zR/view?usp=sharing) |
-| 📊 **Pitch Deck / PPT** | [Google Slides Link](https://docs.google.com/presentation/d/1iabkQgsKhi3aPyphRwlySEBalkdQaVzWJt36T5JfT4k/edit?usp=sharing) |
+| 📊 **Pitch Deck / PPT** | [Google Slides Link](https://drive.google.com/file/d/1KuJFOCBRJhovTVc6QowMoEuYJcNH35e_/view?usp=sharing) |
 | 💻 **GitHub Repo** | [CodeBugMalik/StellarGig](https://github.com/CodeBugMalik/StellarGig) |
-| 📋 **User Feedback Form** | [StellarGig Feedback — Google Forms](https://forms.gle/J4RMXLXC5RA5JJYVA) |
-| 📊 **Onboarded Users & Wallet Interactions** | [Responses Spreadsheet — Google Sheets](https://docs.google.com/spreadsheets/d/1Cs6PGc2464pc3s88xXxBMwD9nXs1qvH89TmJfR-ZoH8/edit?gid=502597252) |
+| 📋 **User Feedback Form** | [StellarGig Feedback — Google Forms](https://forms.gle/xz5QS6Fa4Kdzaf5Y6) |
+| 📊 **Onboarded Users & Wallet Interactions** | [Responses Spreadsheet — Google Sheets](https://docs.google.com/spreadsheets/d/1IG7g996os6GVvmBCDLCtaIklxkw8zj31k_4zxBeq6GA/edit?usp=sharing) |
 
 ---
 
@@ -117,8 +117,8 @@ As part of the Level 4 production MVP requirements, we onboarded real users to v
 
 | Resource | Link |
 |----------|------|
-| 📋 **Feedback Form** | [Submit Feedback](https://forms.gle/J4RMXLXC5RA5JJYVA) |
-| 📊 **User Responses & Wallet Proof** | [View Spreadsheet](https://docs.google.com/spreadsheets/d/1Cs6PGc2464pc3s88xXxBMwD9nXs1qvH89TmJfR-ZoH8/edit?gid=502597252) |
+| 📋 **Feedback Form** | [Submit Feedback](https://forms.gle/1zp5FrVWVPPQPVEv5) |
+| 📊 **User Responses & Wallet Proof** | [View Spreadsheet](https://docs.google.com/spreadsheets/d/1IG7g996os6GVvmBCDLCtaIklxkw8zj31k_4zxBeq6GA/edit?usp=sharing) |
 
 ---
 
