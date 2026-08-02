@@ -66,7 +66,7 @@ export default function EarningsChart({ jobs, mode }: Props) {
             tick={{ fill: '#52525b', fontSize: 10 }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v: number) => `${v}Ξ`}
+            tickFormatter={(v: number) => `${v}`}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
           <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
