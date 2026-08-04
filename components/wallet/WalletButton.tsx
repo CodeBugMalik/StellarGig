@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useWallet } from '@/hooks/useWallet';
 import { stellar } from '@/lib/stellar';
 import { FiCheck, FiCopy, FiCreditCard, FiLogOut } from 'react-icons/fi';
@@ -15,6 +15,19 @@ export default function WalletButton() {
   const { publicKey, isConnected, loading, error, connect, disconnect } = useWallet();
   const [copied, setCopied] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [dropdownOpen]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(publicKey);
@@ -49,7 +62,7 @@ export default function WalletButton() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
         disabled={loading}
