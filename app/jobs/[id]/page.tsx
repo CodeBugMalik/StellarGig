@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useWallet } from '@/hooks/useWallet';
 import { useEscrow } from '@/hooks/useEscrow';
@@ -41,6 +41,14 @@ export default function JobDetailPage() {
   const [loading, setLoading] = useState(true);
   const [txStatus, setTxStatus] = useState<TransactionStatus>('idle');
   const [txHash, setTxHash] = useState('');
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   // Confirmation Modal State
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -81,14 +89,15 @@ export default function JobDetailPage() {
       toast.success(successMsg);
 
       /* Poll until confirmed then refresh */
-      const poll = setInterval(async () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+      pollRef.current = setInterval(async () => {
         const status = await stellar.pollTransaction(result.hash);
         if (status.status === 'SUCCESS') {
-          clearInterval(poll);
+          if (pollRef.current) clearInterval(pollRef.current);
           fetchJob();
           refetchEscrow();
         } else if (status.status === 'FAILED') {
-          clearInterval(poll);
+          if (pollRef.current) clearInterval(pollRef.current);
           setTxStatus('failed');
           toast.error('Transaction failed on-chain.');
         }
@@ -351,7 +360,7 @@ export default function JobDetailPage() {
                 ) : null
               )}
 
-            {isClient && (job.status === 'open' || job.status === 'funded') && !job.freelancer && (
+            {isClient && (job.status === 'open' || job.status === 'funded') && job.freelancer === job.client && (
               <Button
                 variant="danger"
                 loading={txStatus === 'pending'}
