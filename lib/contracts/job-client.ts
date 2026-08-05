@@ -9,7 +9,11 @@ function parseJobStatus(val: string): JobStatus {
     UnderReview: 'under_review', Completed: 'completed',
     Disputed: 'disputed', Cancelled: 'cancelled',
   };
-  return map[val] || 'open';
+  const result = map[val];
+  if (!result) {
+    console.warn(`[StellarGig] Unknown job status from contract: "${val}", defaulting to 'open'`);
+  }
+  return result || 'open';
 }
 
 function parseMilestoneStatus(val: string): MilestoneStatus {
@@ -17,7 +21,11 @@ function parseMilestoneStatus(val: string): MilestoneStatus {
     Pending: 'pending', Submitted: 'submitted',
     Approved: 'approved', Disputed: 'disputed',
   };
-  return map[val] || 'pending';
+  const result = map[val];
+  if (!result) {
+    console.warn(`[StellarGig] Unknown milestone status from contract: "${val}", defaulting to 'pending'`);
+  }
+  return result || 'pending';
 }
 
 function parseJob(raw: Record<string, unknown>): Job {
