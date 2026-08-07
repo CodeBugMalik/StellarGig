@@ -5,6 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Toaster } from 'react-hot-toast';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import NetworkStatusBanner from '@/components/layout/NetworkStatusBanner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             },
           }}
         />
+        <NetworkStatusBanner />
         <Navbar />
         <main className="flex-1">
           <ErrorBoundary>
