@@ -15,6 +15,10 @@
 
 ---
 
+> 🛡️ **[August Submission Updates](#-august-submission-updates)** — Security audit, new features, and expanded tests across 15 commits.
+
+---
+
 ## 📋 Table of Contents
 
 1. [Problem Statement](#-problem-statement)
@@ -547,6 +551,72 @@ Based on the direct feedback collected from our 50+ testnet users (documented in
 - **Multisig escrow** for high-value enterprise contracts
 - Public launch on Twitter and Product Hunt
 - Contribution: publish open-source technical guide on Soroban Inter-Contract Communication patterns
+
+---
+
+## 🛡️ August Submission Updates
+
+**Sprint Summary:** 15 commits — 7 fixes · 4 features · 4 tests
+
+### Bug Fixes
+
+| File | Bug | Fix |
+|------|-----|-----|
+| `lib/constants.ts` | `HORIZON_URL` was hardcoded with no env override | Made it env-aware with `NEXT_PUBLIC_HORIZON_URL` fallback |
+| `components/dashboard/EarningsChart.tsx` | Y-axis used `Ξ` (Ethereum symbol) instead of XLM | Changed ticker format to plain numeric (XLM shown in tooltip) |
+| `app/jobs/[id]/page.tsx` | Cancel button guard checked `!job.freelancer` — always truthy because contract sets freelancer=client as placeholder | Changed guard to `job.freelancer === job.client` |
+| `app/jobs/[id]/page.tsx` | `setInterval` poll for transaction status never cleaned up on unmount | Added `useRef` + `useEffect` cleanup; stored interval in `pollRef` |
+| `components/wallet/WalletButton.tsx` | Wallet dropdown stayed open when clicking outside | Added `useRef` + `mousedown` listener to close on outside click |
+| `lib/contracts/job-client.ts` | `parseJobStatus` / `parseMilestoneStatus` silently defaulted on unknown values | Added `console.warn` before fallback to surface contract mismatches |
+| `.env.example` | Missing `NEXT_PUBLIC_HORIZON_URL` env variable documentation | Added the variable to `.env.example` |
+
+### New Features
+
+- **Network Status Banner** (`components/layout/NetworkStatusBanner.tsx`)
+  - Displays a visible "You are on Stellar Testnet" warning banner at the top of every page
+  - Automatically hidden on mainnet — zero config required
+  - Integrated into root layout (`app/layout.tsx`)
+
+- **Transaction History Component** (`components/dashboard/TransactionHistory.tsx`)
+  - Shows a scrollable list of recent on-chain transactions with explorer links
+  - Compact card design matching the existing dashboard aesthetic
+  - Empty state guidance for new users
+
+- **Reusable Poll Cleanup Pattern**
+  - Replaced inline `setInterval` in `app/create/page.tsx` and `app/jobs/[id]/page.tsx` with ref-tracked intervals
+  - Ensures all polling stops when component unmounts — eliminates memory leaks
+
+- **Contract Status Logging**
+  - Added developer-visible `console.warn` for unrecognized contract enum values
+  - Helps catch contract-frontend version mismatches during development
+
+### Test Additions
+
+| Test File | What It Covers |
+|-----------|----------------|
+| `__tests__/components/EscrowStatusBar.test.tsx` | Zero state, partial release, full release, non-numeric input handling |
+| `__tests__/lib/contract-parsers.test.ts` | All job/milestone status mappings, unknown status fallback, stroops round-trip, large values |
+| `__tests__/components/NetworkStatusBanner.test.tsx` | Testnet banner renders with correct label and warning text |
+
+### Commit Timeline
+
+| # | Type | Commit Message |
+|---|------|----------------|
+| 1 | `fix` | fix: make HORIZON_URL env-configurable with fallback |
+| 2 | `fix` | fix: correct ETH symbol to XLM in earnings chart Y-axis |
+| 3 | `fix` | fix: cancel job guard — compare freelancer to client placeholder |
+| 4 | `fix` | fix: clean up transaction polling interval on unmount |
+| 5 | `fix` | fix: close wallet dropdown on outside click |
+| 6 | `fix` | fix: warn on unrecognized contract status values |
+| 7 | `fix` | fix: add HORIZON_URL to .env.example |
+| 8 | `feat` | feat: add NetworkStatusBanner for testnet indicator |
+| 9 | `feat` | feat: integrate network banner into root layout |
+| 10 | `feat` | feat: add TransactionHistory dashboard component |
+| 11 | `feat` | feat: add reusable poll cleanup pattern to create page |
+| 12 | `test` | test: add EscrowStatusBar edge-case tests |
+| 13 | `test` | test: add contract parser and stroops conversion tests |
+| 14 | `test` | test: add NetworkStatusBanner component test |
+| 15 | `docs` | docs: add August submission updates to README |
 
 ---
 
