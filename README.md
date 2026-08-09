@@ -76,6 +76,48 @@ StellarGig is not a generic blockchain application. It is a protocol that specif
 
 ---
 
+## 🛡️ August Submission Updates
+
+### Bug Fixes
+
+| File | Bug | Fix |
+|------|-----|-----|
+| `lib/constants.ts` | `HORIZON_URL` was hardcoded with no env override | Made it env-aware with `NEXT_PUBLIC_HORIZON_URL` fallback |
+| `components/dashboard/EarningsChart.tsx` | Y-axis used `Ξ` (Ethereum symbol) instead of XLM | Changed ticker format to plain numeric (XLM shown in tooltip) |
+| `app/jobs/[id]/page.tsx` | Cancel button guard checked `!job.freelancer` — always truthy because contract sets freelancer=client as placeholder | Changed guard to `job.freelancer === job.client` |
+| `app/jobs/[id]/page.tsx` | `setInterval` poll for transaction status never cleaned up on unmount | Added `useRef` + `useEffect` cleanup; stored interval in `pollRef` |
+| `components/wallet/WalletButton.tsx` | Wallet dropdown stayed open when clicking outside | Added `useRef` + `mousedown` listener to close on outside click |
+| `lib/contracts/job-client.ts` | `parseJobStatus` / `parseMilestoneStatus` silently defaulted on unknown values | Added `console.warn` before fallback to surface contract mismatches |
+| `.env.example` | Missing `NEXT_PUBLIC_HORIZON_URL` env variable documentation | Added the variable to `.env.example` |
+
+### New Features
+
+- **Network Status Banner** (`components/layout/NetworkStatusBanner.tsx`)
+  - Displays a visible "You are on Stellar Testnet" warning banner at the top of every page
+  - Automatically hidden on mainnet — zero config required
+  - Integrated into root layout (`app/layout.tsx`)
+
+- **Transaction History Component** (`components/dashboard/TransactionHistory.tsx`)
+  - Shows a scrollable list of recent on-chain transactions with explorer links
+  - Compact card design matching the existing dashboard aesthetic
+  - Empty state guidance for new users
+
+- **Reusable Poll Cleanup Pattern**
+  - Replaced inline `setInterval` in `app/create/page.tsx` and `app/jobs/[id]/page.tsx` with ref-tracked intervals
+  - Ensures all polling stops when component unmounts — eliminates memory leaks
+
+- **Contract Status Logging**
+  - Added developer-visible `console.warn` for unrecognized contract enum values
+  - Helps catch contract-frontend version mismatches during development
+
+### Test Additions
+
+| Test File | What It Covers |
+|-----------|----------------|
+| `__tests__/components/EscrowStatusBar.test.tsx` | Zero state, partial release, full release, non-numeric input handling |
+| `__tests__/lib/contract-parsers.test.ts` | All job/milestone status mappings, unknown status fallback, stroops round-trip, large values |
+| `__tests__/components/NetworkStatusBanner.test.tsx` | Testnet banner renders with correct label and warning text |
+
 ## 🔗 Contract Addresses & Transactions
 
 All contracts are deployed and cross-initialized on the **Stellar Testnet** using the `pranjal` developer identity.
