@@ -89,7 +89,7 @@ StellarGig is not a generic blockchain application. It is a protocol that specif
 | `components/wallet/WalletButton.tsx` | Wallet dropdown stayed open when clicking outside | Added `useRef` + `mousedown` listener to close on outside click |
 | `lib/contracts/job-client.ts` | `parseJobStatus` / `parseMilestoneStatus` silently defaulted on unknown values | Added `console.warn` before fallback to surface contract mismatches |
 | `.env.example` | Missing `NEXT_PUBLIC_HORIZON_URL` env variable documentation | Added the variable to `.env.example` |
-| `.github/workflows/ci.yml` | `dtolnay/rust-toolchain@stable` pulled latest Rust, which resolves `rand_core` incompatibly with `soroban-env-host` 22.1.3 (`ChaCha20Rng: CryptoRng` trait bound) | Pinned Rust toolchain to **1.81.0** in both `ci.yml` and `deploy-contract.yml` |
+| `.github/workflows/ci.yml` | CI previously failed due to uncommitted `Cargo.lock` resolving breaking `ed25519-dalek 3.0` / `edition2024` dependencies on `cargo build` | Committed `Cargo.lock` for contracts, enabled `--locked` builds, and restored `stable` toolchain |
 
 ### New Features
 
