@@ -23,10 +23,10 @@ jobs:
         run: cargo install stellar-cli --locked || true
       - name: Build Escrow Contract
         working-directory: contracts/escrow-contract
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: cargo build --target wasm32-unknown-unknown --release --locked
       - name: Build Job Contract
         working-directory: contracts/job-contract
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: cargo build --target wasm32-unknown-unknown --release --locked
       - name: Deploy Escrow Contract
         run: |
           stellar contract deploy \

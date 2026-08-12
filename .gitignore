@@ -35,6 +35,7 @@ next-env.d.ts
 # rust / soroban
 **/target/
 Cargo.lock
+!contracts/*/Cargo.lock
 
 # plan file
 implementation_plan.md

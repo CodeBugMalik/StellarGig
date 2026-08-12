@@ -31,13 +31,13 @@ jobs:
           targets: wasm32-unknown-unknown
       - name: Build Escrow Contract
         working-directory: contracts/escrow-contract
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: cargo build --target wasm32-unknown-unknown --release --locked
       - name: Build Job Contract
         working-directory: contracts/job-contract
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: cargo build --target wasm32-unknown-unknown --release --locked
       - name: Test Escrow Contract
         working-directory: contracts/escrow-contract
-        run: cargo test
+        run: cargo test --locked
       - name: Test Job Contract
         working-directory: contracts/job-contract
-        run: cargo test
+        run: cargo test --locked
