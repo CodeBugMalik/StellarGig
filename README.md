@@ -555,4 +555,4 @@ stellar contract invoke --id <JOB_ID> --source pranjal --network testnet \
 
 **Pranjal Malik** — [@CodeBugMalik](https://github.com/CodeBugMalik)
 
-*Built for the [RiseIn Stellar dApp Development Program](https://www.risein.com/) — Level 4 Black Belt*
+
