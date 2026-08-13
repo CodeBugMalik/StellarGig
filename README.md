@@ -530,7 +530,7 @@ stellar contract invoke --id <JOB_ID> --source pranjal --network testnet \
 - Real-time contract event streaming
 - Testnet deployment with on-chain transactions
 
-### ✅ Level 4 — Black Belt (Complete)
+### ✅ Level 4 — Green Belt 
 - Contract security hardening (13 targeted fixes across both contracts)
 - Frontend production quality (memory leak, N+1 query, session validation, error boundary)
 - Transaction Confirmation Modal before every state-changing action
